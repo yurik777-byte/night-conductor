@@ -36,6 +36,14 @@ prototype/NightConductorPrototype.rbxlx
 node prototype/build-rbxlx.js
 ```
 
+Физический прототип v8 собирается отдельно:
+
+```bash
+node prototype/build-rbxlx.js --physical
+```
+
+Он пишет `prototype/NightConductorPhysical.rbxlx` и не трогает v7-сборку.
+
 - не редактируй `.rbxlx` напрямую: при следующей сборке изменения из Studio потеряются;
 - если всё же правил в Studio — перенеси изменения в `src/` (или попроси помочь с переносом).
 

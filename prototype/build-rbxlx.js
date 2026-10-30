@@ -1,8 +1,11 @@
-// Generates NightConductorPrototype.rbxlx from the source tree.
-// Usage: node build-rbxlx.js
+// Generates a .rbxlx from the source tree.
+// Usage:
+//   node build-rbxlx.js             -> NightConductorPrototype.rbxlx (v7 UI build)
+//   node build-rbxlx.js --physical  -> NightConductorPhysical.rbxlx (v8 physical slice)
 const fs = require("fs");
 const path = require("path");
 
+const physical = process.argv.includes("--physical");
 const root = __dirname;
 let referent = 0;
 
@@ -79,21 +82,36 @@ const shared = folder("Shared", [
 ]);
 
 const buildInfo = item("StringValue", "BUILD_INFO", [], [
-  `<string name="Value">NIGHT_CONDUCTOR_PROTOTYPE_V7</string>`,
+  `<string name="Value">${physical ? "NIGHT_CONDUCTOR_PHYSICAL_V8" : "NIGHT_CONDUCTOR_PROTOTYPE_V7"}</string>`,
 ]);
 
-const server = folder("Server", [
-  scriptItem("Script", "Bootstrap", read("src/ServerScriptService/Server/Bootstrap.server.lua")),
-  moduleScript("GameService", "src/ServerScriptService/Server/GameService.lua"),
-  moduleScript("PassengerFactory", "src/ServerScriptService/Server/PassengerFactory.lua"),
-  moduleScript("WorldBuilder", "src/ServerScriptService/Server/WorldBuilder.lua"),
-]);
+const serverModules = physical
+  ? [
+      scriptItem("Script", "Bootstrap", read("src/ServerScriptService/Server/Bootstrap.server.lua")),
+      moduleScript("PhysicalService", "src/ServerScriptService/Server/PhysicalService.lua"),
+      moduleScript("PassengerFactory", "src/ServerScriptService/Server/PassengerFactory.lua"),
+      moduleScript("WorldBuilder", "src/ServerScriptService/Server/WorldBuilder.lua"),
+    ]
+  : [
+      scriptItem("Script", "Bootstrap", read("src/ServerScriptService/Server/Bootstrap.server.lua")),
+      moduleScript("GameService", "src/ServerScriptService/Server/GameService.lua"),
+      moduleScript("PassengerFactory", "src/ServerScriptService/Server/PassengerFactory.lua"),
+      moduleScript("WorldBuilder", "src/ServerScriptService/Server/WorldBuilder.lua"),
+    ];
 
-const clientScript = scriptItem(
-  "LocalScript",
-  "ClientMain",
-  read("src/StarterPlayer/StarterPlayerScripts/ClientMain.client.lua")
-);
+const server = folder("Server", serverModules);
+
+const clientScript = physical
+  ? scriptItem(
+      "LocalScript",
+      "PhysicalClient",
+      read("src/StarterPlayer/StarterPlayerScripts/PhysicalClient.client.lua")
+    )
+  : scriptItem(
+      "LocalScript",
+      "ClientMain",
+      read("src/StarterPlayer/StarterPlayerScripts/ClientMain.client.lua")
+    );
 
 const starterPlayerScripts = item("StarterPlayerScripts", "StarterPlayerScripts", [clientScript]);
 
@@ -110,6 +128,9 @@ const xml = [
   `</roblox>`,
 ].join("\n");
 
-const outputPath = path.join(root, "NightConductorPrototype.rbxlx");
+const outputPath = path.join(
+  root,
+  physical ? "NightConductorPhysical.rbxlx" : "NightConductorPrototype.rbxlx"
+);
 fs.writeFileSync(outputPath, xml, "utf8");
 console.log(`Wrote ${outputPath} (${xml.length} chars, ${referent} referents)`);

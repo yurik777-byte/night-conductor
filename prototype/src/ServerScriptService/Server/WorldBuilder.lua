@@ -1,6 +1,7 @@
 -- Builds the prototype station, train, booth and passenger models from primitives.
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 
 local WorldBuilder = {}
@@ -333,6 +334,252 @@ function WorldBuilder.removePassenger(model)
 	if model then
 		model:Destroy()
 	end
+end
+
+-- ===== v8 physical slice =====
+
+local PHYSICAL_WORLD = "NightConductorPhysicalWorld"
+local PHYSICAL_PASSENGERS = "NightConductorPhysicalPassengers"
+local REFLECTION_NAME = "NightConductorReflection"
+
+WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 4.2), Vector3.new(0, 4.0, -1))
+WorldBuilder.physicalNpc = CFrame.lookAt(Vector3.new(0, 0, -1), Vector3.new(0, 0, 3))
+
+local function surfaceLabel(partInstance, text, face, textSize)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Surface"
+	gui.Face = face or Enum.NormalId.Front
+	gui.CanvasSize = Vector2.new(600, 400)
+	gui.LightInfluence = 0
+	gui.Parent = partInstance
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(40, 32, 24)
+	label.TextWrapped = true
+	label.TextScaled = true
+	label.Font = Enum.Font.Gotham
+	label.Parent = gui
+	return label
+end
+
+function WorldBuilder.buildVestibule()
+	local old = Workspace:FindFirstChild(WORLD_NAME)
+	if old then
+		old:Destroy()
+	end
+	local oldPhysical = Workspace:FindFirstChild(PHYSICAL_WORLD)
+	if oldPhysical then
+		oldPhysical:Destroy()
+	end
+	local baseplate = Workspace:FindFirstChild("Baseplate")
+	if baseplate then
+		baseplate:Destroy()
+	end
+
+	buildLighting()
+	Lighting.Brightness = 2.4
+	Lighting.Ambient = Color3.fromRGB(95, 85, 74)
+	Lighting.OutdoorAmbient = Color3.fromRGB(78, 73, 80)
+	Lighting.EnvironmentDiffuseScale = 0.6
+
+	local world = Instance.new("Folder")
+	world.Name = PHYSICAL_WORLD
+	world.Parent = Workspace
+
+	part(world, "Floor", Vector3.new(10, 0.4, 10), CFrame.new(0, -0.2, 0), Color3.fromRGB(42, 30, 22), Enum.Material.SmoothPlastic)
+	part(world, "Ceiling", Vector3.new(10, 0.4, 10), CFrame.new(0, 6, 0), Color3.fromRGB(26, 30, 28), Enum.Material.Wood)
+	part(world, "WallBack", Vector3.new(10, 6.2, 0.4), CFrame.new(0, 3, -5), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+	part(world, "WallFront", Vector3.new(10, 6.2, 0.4), CFrame.new(0, 3, 5), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+	part(world, "WallLeft", Vector3.new(0.4, 6.2, 10), CFrame.new(-5, 3, 0), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+	part(world, "WallRight", Vector3.new(0.4, 6.2, 10), CFrame.new(5, 3, 0), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+
+	part(world, "Rug", Vector3.new(5.4, 0.04, 3.4), CFrame.new(0, 0.02, 0.6), Color3.fromRGB(80, 28, 34), Enum.Material.Fabric).CanCollide = false
+
+	local door = part(world, "Door", Vector3.new(2.1, 3.2, 0.16), CFrame.new(0, 1.6, -4.78), Color3.fromRGB(44, 30, 22), Enum.Material.Wood)
+	part(world, "DoorFrameTop", Vector3.new(2.4, 0.2, 0.3), CFrame.new(0, 3.3, -4.74), Color3.fromRGB(120, 92, 52), Enum.Material.Metal)
+	part(world, "DoorHandle", Vector3.new(0.12, 0.12, 0.5), CFrame.new(0.7, 1.5, -4.6), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+	door.CanCollide = false
+
+	local rugLight = part(world, "RugLight", Vector3.new(0.2, 0.2, 0.2), CFrame.new(0, 5.7, 0), Color3.fromRGB(255, 220, 160), Enum.Material.Neon)
+	rugLight.CanCollide = false
+	addPointLight(rugLight, Color3.fromRGB(255, 214, 150), 1.8, 24)
+
+	local lampAnchor = part(world, "CeilingLamp", Vector3.new(0.6, 0.1, 0.6), CFrame.new(-2.2, 5.86, -1), Color3.fromRGB(255, 230, 180), Enum.Material.Neon)
+	lampAnchor.CanCollide = false
+	addPointLight(lampAnchor, Color3.fromRGB(255, 220, 160), 2.4, 28)
+
+	local sconce = part(world, "Sconce", Vector3.new(0.18, 0.5, 0.36), CFrame.new(-4.78, 4.1, 2.6), Color3.fromRGB(255, 215, 150), Enum.Material.Neon)
+	sconce.CanCollide = false
+	sconce.Transparency = 1
+	addPointLight(sconce, Color3.fromRGB(255, 210, 150), 1.2, 14)
+
+	local poster = part(world, "RulesPoster", Vector3.new(0.06, 1.7, 2.1), CFrame.new(-4.76, 2.9, 1.6), Color3.fromRGB(175, 155, 120), Enum.Material.SmoothPlastic)
+	surfaceLabel(poster, "ПРАВИЛА СМЕНЫ\n\nДАТА · ИМЯ · ФОТО\nТЕНЬ · ОТРАЖЕНИЕ · РУКИ\n\nВсё совпало — ПРОПУСТИТЬ.\nЧто-то не так — ОТКАТАТЬ.", Enum.NormalId.Right)
+	local posterSurface = poster:FindFirstChildOfClass("SurfaceGui")
+	if posterSurface then
+		posterSurface.LightInfluence = 0.35
+	end
+
+	local clockFace = part(world, "Clock", Vector3.new(0.08, 1.1, 1.1), CFrame.new(0, 4.2, -4.76) * CFrame.Angles(0, math.rad(90), 0), Color3.fromRGB(235, 225, 200), Enum.Material.SmoothPlastic)
+	clockFace.Shape = Enum.PartType.Cylinder
+
+	local desk = part(world, "Table", Vector3.new(2.6, 0.12, 1.2), CFrame.new(-2.6, 2.7, 2.2), Color3.fromRGB(62, 42, 28), Enum.Material.SmoothPlastic)
+	desk.CanCollide = true
+	for _, offset in ipairs({ Vector3.new(-1.15, 0, -0.48), Vector3.new(1.15, 0, -0.48), Vector3.new(-1.15, 0, 0.48), Vector3.new(1.15, 0, 0.48) }) do
+		part(world, "TableLeg", Vector3.new(0.12, 2.7, 0.12), CFrame.new(-2.6, 1.35, 2.2) * CFrame.new(offset), Color3.fromRGB(52, 34, 22), Enum.Material.Wood)
+	end
+
+	local props = Instance.new("Folder")
+	props.Name = "Props"
+	props.Parent = world
+
+	local function prop(name, size, relative, color, material)
+		local p = part(props, name, size, CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(relative), color, material or Enum.Material.SmoothPlastic)
+		p.CanCollide = false
+		return p
+	end
+
+	-- Documents
+	local ticket = prop("Ticket", Vector3.new(0.62, 0.02, 0.38), Vector3.new(-0.85, 0, 0.18), Color3.fromRGB(225, 214, 184))
+	ticket.Material = Enum.Material.SmoothPlastic
+	surfaceLabel(ticket, "БИЛЕТ", Enum.NormalId.Top)
+
+	local passport = prop("Passport", Vector3.new(0.5, 0.02, 0.36), Vector3.new(-0.15, 0, -0.05), Color3.fromRGB(70, 50, 40))
+	surfaceLabel(passport, "ПАСПОРТ", Enum.NormalId.Top)
+
+	-- Tools
+	local lamp = prop("Lamp", Vector3.new(0.34, 0.5, 0.34), Vector3.new(0.85, 0.25, -0.2), Color3.fromRGB(150, 120, 60), Enum.Material.Metal)
+	part(lamp, "Glass", Vector3.new(0.26, 0.3, 0.26), lamp.CFrame * CFrame.new(0, 0.03, 0), Color3.fromRGB(255, 235, 170), Enum.Material.Neon).CanCollide = false
+
+	local mirror = prop("Mirror", Vector3.new(0.5, 0.7, 0.06), Vector3.new(0.85, 0.36, 0.3), Color3.fromRGB(150, 150, 160), Enum.Material.Metal)
+	mirror.CFrame = CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(0.85, 0.36, 0.3) * CFrame.Angles(0, math.rad(15), 0)
+	part(mirror, "Glass", Vector3.new(0.4, 0.6, 0.02), mirror.CFrame * CFrame.new(0, 0, 0.04), Color3.fromRGB(190, 210, 215), Enum.Material.Glass).CanCollide = false
+
+	local magnifier = prop("Magnifier", Vector3.new(0.34, 0.34, 0.05), Vector3.new(-0.15, 0.04, 0.42), Color3.fromRGB(150, 120, 60), Enum.Material.Metal)
+	magnifier.Shape = Enum.PartType.Cylinder
+	magnifier.CFrame = CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(-0.15, 0.04, 0.42) * CFrame.Angles(0, 0, math.rad(90))
+
+	local stampAdmit = prop("StampAdmit", Vector3.new(0.24, 0.42, 0.24), Vector3.new(-0.55, 0.21, 0.42), Color3.fromRGB(40, 110, 65), Enum.Material.Metal)
+	part(stampAdmit, "Top", Vector3.new(0.3, 0.1, 0.3), stampAdmit.CFrame * CFrame.new(0, 0.2, 0), Color3.fromRGB(40, 110, 65), Enum.Material.Metal).CanCollide = false
+	local stampDeny = prop("StampDeny", Vector3.new(0.24, 0.42, 0.24), Vector3.new(-0.24, 0.21, 0.42), Color3.fromRGB(120, 45, 50), Enum.Material.Metal)
+	part(stampDeny, "Top", Vector3.new(0.3, 0.1, 0.3), stampDeny.CFrame * CFrame.new(0, 0.2, 0), Color3.fromRGB(120, 45, 50), Enum.Material.Metal).CanCollide = false
+
+	-- Reflection holder lives in ReplicatedStorage, not rendered in the room.
+
+	-- Reflection holder lives in ReplicatedStorage, not rendered in the room.
+	local oldReflection = ReplicatedStorage:FindFirstChild(REFLECTION_NAME)
+	if oldReflection then
+		oldReflection:Destroy()
+	end
+
+	return {
+		world = world,
+		props = props,
+		spawn = WorldBuilder.physicalSpawn,
+		npc = WorldBuilder.physicalNpc,
+	}
+end
+
+local function buildHand(model, skin, extraFinger)
+	local hand = Instance.new("Model")
+	hand.Name = "RightHand"
+	hand.Parent = model
+
+	local palm = part(hand, "Palm", Vector3.new(0.42, 0.5, 0.18), CFrame.new(1.5, 2.55, -0.58), skin, Enum.Material.SmoothPlastic, 0, false)
+	palm.CanCollide = false
+
+	local count = extraFinger and 6 or 5
+	local startX = 1.5 - (count - 1) * 0.055
+	for index = 1, count do
+		local finger = part(
+			hand,
+			"Finger" .. tostring(index),
+			Vector3.new(0.08, 0.42, 0.1),
+			CFrame.new(startX + (index - 1) * 0.11, 2.13, -0.6),
+			skin,
+			Enum.Material.SmoothPlastic,
+			0,
+			false
+		)
+		finger.CanCollide = false
+	end
+
+	return hand
+end
+
+function WorldBuilder.clearPhysical()
+	local folder = Workspace:FindFirstChild(PHYSICAL_PASSENGERS)
+	if folder then
+		folder:Destroy()
+	end
+	local reflection = ReplicatedStorage:FindFirstChild(REFLECTION_NAME)
+	if reflection then
+		reflection:Destroy()
+	end
+end
+
+function WorldBuilder.spawnPhysicalPassenger(data)
+	WorldBuilder.clearPhysical()
+
+	local folder = Instance.new("Folder")
+	folder.Name = PHYSICAL_PASSENGERS
+	folder.Parent = Workspace
+
+	local model = createPassengerModel(data)
+	model.Name = "PhysicalPassenger_" .. data.id
+
+	-- The fake shadow is the only shadow; real part shadows would fight it.
+	local oldShadow = model:FindFirstChild("Shadow")
+	if oldShadow then
+		oldShadow:Destroy()
+	end
+	for _, child in ipairs(model:GetDescendants()) do
+		if child:IsA("BasePart") then
+			child.CastShadow = false
+		end
+	end
+
+	buildHand(model, data.appearance.skinColor, data.extraFinger)
+
+	-- The physical slice shows the name in the HUD, not as a floating label.
+	local billboardLabel = model:FindFirstChild("Torso") and model.Torso:FindFirstChild("Label")
+	if billboardLabel then
+		billboardLabel:Destroy()
+	end
+
+	local shadowX = data.shadowWrong and 1.0 or -0.9
+	local shadow = part(model, "FloorShadow", Vector3.new(2.2, 0.03, 1.3), CFrame.new(shadowX, 0.06, -1), Color3.fromRGB(4, 4, 7), Enum.Material.SmoothPlastic, 0.45, false)
+	shadow.CanCollide = false
+	shadow.CastShadow = false
+
+	local npcPosition = WorldBuilder.physicalNpc.Position
+	model:PivotTo(WorldBuilder.physicalNpc)
+	model.Parent = folder
+
+	-- A reflection source exists only when the passenger should have a reflection.
+	-- The client renders it inside the hand mirror.
+	if not data.noReflection then
+		local source = Instance.new("Model")
+		source.Name = REFLECTION_NAME
+		for _, partName in ipairs({ "Torso", "Head", "Hat", "LeftArm", "RightArm", "LeftLeg", "RightLeg", "LeftShoe", "RightShoe" }) do
+			local original = model:FindFirstChild(partName)
+			if original then
+				local clone = original:Clone()
+				clone.Anchored = true
+				clone.CastShadow = false
+				clone.Parent = source
+			end
+		end
+		source.PrimaryPart = source:FindFirstChild("Torso")
+		source:PivotTo(CFrame.new(0, 0, 0))
+		source.Parent = ReplicatedStorage
+	end
+
+	return model
 end
 
 return WorldBuilder

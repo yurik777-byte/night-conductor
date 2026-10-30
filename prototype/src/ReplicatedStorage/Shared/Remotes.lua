@@ -31,4 +31,7 @@ return {
 	TunnelChoice = get("RemoteEvent", "TunnelChoice"),
 	Restart = get("RemoteEvent", "Restart"),
 	GameEvent = get("RemoteEvent", "GameEvent"),
+	PhysicalEvent = get("RemoteEvent", "PhysicalEvent"),
+	PhysicalDecide = get("RemoteEvent", "PhysicalDecide"),
+	PhysicalRestart = get("RemoteEvent", "PhysicalRestart"),
 }

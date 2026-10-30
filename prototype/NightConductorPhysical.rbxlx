@@ -1,0 +1,2513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+  <External>null</External>
+  <External>nil</External>
+  <Item class="Workspace" referent="RBX13">
+    <Properties>
+      <string name="Name">Workspace</string>
+    </Properties>
+  <Item class="Part" referent="RBX1">
+    <Properties>
+      <string name="Name">Baseplate</string>
+      <bool name="Anchored">true</bool>
+      <Vector3 name="size"><X>260</X><Y>2</Y><Z>260</Z></Vector3>
+      <CoordinateFrame name="CFrame">
+        <X>0</X><Y>-1</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+      <Color3uint8 name="Color3uint8">4286611584</Color3uint8>
+      <token name="Material">256</token>
+      <token name="TopSurface">0</token>
+      <token name="BottomSurface">0</token>
+    </Properties>
+  </Item>
+  </Item>
+  <Item class="Lighting" referent="RBX14">
+    <Properties>
+      <string name="Name">Lighting</string>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="RBX15">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+  <Item class="StringValue" referent="RBX5">
+    <Properties>
+      <string name="Name">BUILD_INFO</string>
+      <string name="Value">NIGHT_CONDUCTOR_PHYSICAL_V8</string>
+    </Properties>
+  </Item>
+  <Item class="Folder" referent="RBX4">
+    <Properties>
+      <string name="Name">Shared</string>
+    </Properties>
+  <Item class="ModuleScript" referent="RBX2">
+    <Properties>
+      <string name="Name">Config</string>
+      <ProtectedString name="Source"><![CDATA[-- NIGHT CONDUCTOR — prototype configuration
+local Config = {}
+
+Config.GameName = "NIGHT CONDUCTOR"
+Config.Version = "0.1-prototype"
+Config.TotalPassengers = 6
+Config.Today = "30.10.2026"
+Config.Rule = "Аномалия может быть в любом канале. Дата — только одна из проверок."
+Config.Checklist = "ПРОВЕРЬ: ДАТА · ИМЯ · ФОТО · ОТРАЖЕНИЕ · ТЕНЬ · РУКИ"
+Config.TutorialIntro = "Ты — ночной кондуктор.\n\n1. Сверь билет и паспорт: имя, дата, место.\n2. Сравни фото: шляпа и глаза.\n3. Проверь отражение (ЗЕРКАЛО) и тень (ЛАМПА).\n4. Аномалия может быть в любом канале.\n\nВсё совпало — ПРОПУСТИТЬ.\nЧто-то не так — ОТКАЗАТЬ."
+Config.Tutorial = {
+	[1] = {
+		text = "УЧЕБНЫЙ ПАССАЖИР. Сверь имя и дату. Всё совпадает? Нажми ПРОПУСТИТЬ.",
+		decision = "admit",
+	},
+	[2] = {
+		text = "ДАТА НЕ СОВПАДАЕТ: 12.04.1912 вместо 30.10.2026. Нажми ОТКАЗАТЬ.",
+		tool = "magnifier",
+		decision = "deny",
+	},
+	[3] = {
+		text = "ДАТА ВЕРНАЯ — ЭТО ЛОВУШКА. Проверь тень: нажми ЛАМПА.",
+		tool = "lamp",
+		decision = "deny",
+	},
+	[4] = {
+		text = "ПРОВЕРЬ ОТРАЖЕНИЕ: нажми ЗЕРКАЛО.",
+		tool = "mirror",
+		decision = "deny",
+	},
+	[5] = {
+		text = "ПРОВЕРЬ РУКИ: нажми ЛУПА или ОСМОТР.",
+		tool = "magnifier",
+		decision = "deny",
+	},
+	[6] = {
+		text = "ТЕПЕРЬ САМ. Проверь билет, фото, отражение и тень.",
+	},
+}
+
+Config.PassengerNames = {
+	"Мира Вельт",
+	"Оскар Пенн",
+	"Лира Нокт",
+	"Сол Вейд",
+	"Ирис Мор",
+	"Тобиас Кроу",
+	"Нэя Свет",
+	"Финн Гарр",
+	"Ада Лун",
+	"Рэй Стоун",
+}
+
+Config.Destinations = {
+	"Станция Свечей",
+	"Станция Зеркал",
+	"Станция Забвения",
+	"Станция Садов",
+	"Последняя станция",
+}
+
+Config.Origins = {
+	"Город Полуночи",
+	"Деревня Фонарей",
+	"Остров Тумана",
+	"Нижние Сады",
+	"Порт Снов",
+}
+
+Config.LuggageContents = {
+	"книга со странными страницами",
+	"банка светлячков",
+	"старый компас",
+	"коробка с чаем",
+	"свёрток с тёплым шарфом",
+	"клетка с механической птицей",
+}
+
+Config.HatColors = {
+	{ name = "красная", color = Color3.fromRGB(180, 60, 60) },
+	{ name = "зелёная", color = Color3.fromRGB(60, 140, 90) },
+	{ name = "синяя", color = Color3.fromRGB(60, 90, 170) },
+	{ name = "жёлтая", color = Color3.fromRGB(210, 180, 60) },
+	{ name = "фиолетовая", color = Color3.fromRGB(120, 70, 160) },
+}
+
+Config.EyeColors = {
+	"зелёные",
+	"серые",
+	"карие",
+	"янтарные",
+	"бледно-голубые",
+}
+
+Config.Anomalies = {
+	wrong_date = {
+		name = "Билет из прошлого",
+		tier = 1,
+		tool = "magnifier",
+		hint = "Дата на билете не совпадает с сегодняшним днём.",
+	},
+	wrong_shadow = {
+		name = "Тень не там",
+		tier = 1,
+		tool = "lamp",
+		hint = "Тень падает в сторону лампы, а не от неё.",
+	},
+	no_reflection = {
+		name = "Без отражения",
+		tier = 1,
+		tool = "mirror",
+		hint = "В зеркале пассажир не отражается.",
+	},
+	six_fingers = {
+		name = "Лишний палец",
+		tier = 1,
+		tool = "magnifier",
+		hint = "На правой руке шесть пальцев.",
+	},
+	photo_mismatch = {
+		name = "Чужое фото",
+		tier = 1,
+		tool = "look",
+		hint = "Шляпа на фото не совпадает с той, что на пассажире.",
+	},
+}
+
+Config.Questions = {
+	{ id = "destination", text = "Куда вы едете?" },
+	{ id = "luggage", text = "Что у вас в багаже?" },
+	{ id = "name", text = "Как вас зовут?" },
+}
+
+Config.TunnelChoices = {
+	{ id = "expose", text = "РАЗОБЛАЧИТЬ (зеркало)" },
+	{ id = "contain", text = "ИЗОЛИРОВАТЬ ВАГОН" },
+	{ id = "brake", text = "СТОП-КРАН" },
+	{ id = "hide", text = "СПРЯТАТЬСЯ" },
+}
+
+return Config
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX3">
+    <Properties>
+      <string name="Name">Remotes</string>
+      <ProtectedString name="Source"><![CDATA[-- Shared remotes. The server creates them; the client waits for replication.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local folder
+if RunService:IsServer() then
+	folder = ReplicatedStorage:FindFirstChild("NightConductorRemotes")
+	if not folder then
+		folder = Instance.new("Folder")
+		folder.Name = "NightConductorRemotes"
+		folder.Parent = ReplicatedStorage
+	end
+else
+	folder = ReplicatedStorage:WaitForChild("NightConductorRemotes")
+end
+
+local function get(className, name)
+	local item = folder:FindFirstChild(name)
+	if not item then
+		item = Instance.new(className)
+		item.Name = name
+		item.Parent = folder
+	end
+	return item
+end
+
+return {
+	Inspect = get("RemoteFunction", "Inspect"),
+	Ask = get("RemoteFunction", "Ask"),
+	Decide = get("RemoteEvent", "Decide"),
+	TunnelChoice = get("RemoteEvent", "TunnelChoice"),
+	Restart = get("RemoteEvent", "Restart"),
+	GameEvent = get("RemoteEvent", "GameEvent"),
+	PhysicalEvent = get("RemoteEvent", "PhysicalEvent"),
+	PhysicalDecide = get("RemoteEvent", "PhysicalDecide"),
+	PhysicalRestart = get("RemoteEvent", "PhysicalRestart"),
+}
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  </Item>
+  </Item>
+  <Item class="ServerScriptService" referent="RBX16">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+  <Item class="Folder" referent="RBX10">
+    <Properties>
+      <string name="Name">Server</string>
+    </Properties>
+  <Item class="Script" referent="RBX6">
+    <Properties>
+      <string name="Name">Bootstrap</string>
+      <ProtectedString name="Source"><![CDATA[local physicalService = script.Parent:FindFirstChild("PhysicalService")
+
+if physicalService then
+	print("[NightConductor] Bootstrap physical v8 loaded")
+	require(physicalService).init()
+else
+	local GameService = require(script.Parent:WaitForChild("GameService"))
+	print("[NightConductor] Bootstrap v7 loaded")
+	GameService.init()
+end
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX7">
+    <Properties>
+      <string name="Name">PhysicalService</string>
+      <ProtectedString name="Source"><![CDATA[-- v8 physical slice: 4 passengers in a vestibule, decisions by stamp.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local PassengerFactory = require(script.Parent:WaitForChild("PassengerFactory"))
+local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
+
+local PhysicalService = {}
+
+local activePlayer = nil
+local shiftRunning = false
+local currentData = nil
+local currentModel = nil
+local locked = true
+local pendingDecision = nil
+local decisionSignal = Instance.new("BindableEvent")
+
+-- First physical shift: safe -> six fingers -> wrong shadow -> no reflection.
+local SCRIPTED_PLAN = {
+	nil,
+	"six_fingers",
+	"wrong_shadow",
+	"no_reflection",
+}
+local SCRIPTED_HINTS = {
+	"Возьми билет и паспорт со стола. Сравни имя и дату. Потом поставь печать.",
+	"Проверь руки пассажира. Возьми лупу со стола и поднеси к руке.",
+	"Проверь тень. Возьми фонарь и обойди пассажира.",
+	"Проверь отражение. Возьми зеркало и наведи его на пассажира.",
+}
+local SEED = 101
+
+local function send(player, payload)
+	if player and player.Parent then
+		Remotes.PhysicalEvent:FireClient(player, payload)
+	end
+end
+
+local function waitForDecision(timeout)
+	local done = false
+	local connection = decisionSignal.Event:Connect(function()
+		done = true
+	end)
+
+	local started = os.clock()
+	while not done and os.clock() - started < timeout do
+		if not activePlayer or not activePlayer.Parent then
+			break
+		end
+		task.wait(0.1)
+	end
+
+	connection:Disconnect()
+	return done
+end
+
+local function evaluate(data, decision, stats)
+	local correct = false
+	local message
+
+	if decision == "admit" then
+		if data.isAnomaly then
+			stats.anomaliesOnBoard = stats.anomaliesOnBoard + 1
+			stats.mistakes = stats.mistakes + 1
+			message = "Аномалия села в поезд. Она уже в тамбуре."
+		else
+			stats.correct = stats.correct + 1
+			correct = true
+			message = "Пассажир сел. Пока всё спокойно."
+		end
+	else
+		if data.isAnomaly then
+			stats.caught = stats.caught + 1
+			stats.correct = stats.correct + 1
+			correct = true
+			message = "Верно. Пассажир растворился в тени."
+		else
+			stats.mistakes = stats.mistakes + 1
+			message = "Вы отказали невиновному. Он ушёл с обидой."
+		end
+	end
+
+	return correct, message
+end
+
+local function runShift(player)
+	WorldBuilder.clearPhysical()
+
+	local character = player.Character or player.CharacterAdded:Wait()
+	task.wait(0.4)
+	character:PivotTo(WorldBuilder.physicalSpawn)
+
+	send(player, { type = "reset" })
+
+	local stats = {
+		correct = 0,
+		mistakes = 0,
+		caught = 0,
+		anomaliesOnBoard = 0,
+		total = #SCRIPTED_PLAN,
+	}
+
+	for index = 1, #SCRIPTED_PLAN do
+		if not player.Parent then
+			return
+		end
+
+		local data = PassengerFactory.create(index, SEED, SCRIPTED_PLAN[index])
+		currentData = data
+		currentModel = WorldBuilder.spawnPhysicalPassenger(data)
+		locked = false
+		pendingDecision = nil
+
+		send(player, {
+			type = "passenger",
+			index = index,
+			total = #SCRIPTED_PLAN,
+			tutorial = index == 1,
+			hint = SCRIPTED_HINTS[index],
+			data = PassengerFactory.publicData(data),
+		})
+
+		local gotDecision = waitForDecision(180)
+		if not gotDecision then
+			send(player, {
+				type = "result",
+				stars = 1,
+				payout = 0,
+				tunnelSuccess = false,
+				stats = {
+					correct = stats.correct,
+					mistakes = stats.mistakes,
+					caught = stats.caught,
+					missed = stats.anomaliesOnBoard,
+					total = stats.total,
+				},
+			})
+			return
+		end
+
+		local decision = pendingDecision
+		pendingDecision = nil
+		locked = true
+
+		if decision ~= "admit" and decision ~= "deny" then
+			decision = "deny"
+		end
+
+		local correct, message = evaluate(data, decision, stats)
+		local hint = data.isAnomaly and data.anomalyId and Config.Anomalies[data.anomalyId] and Config.Anomalies[data.anomalyId].hint or nil
+		if not correct and not data.isAnomaly then
+			hint = "Все документы, тень и отражение совпадали. Невиновных нужно пропускать."
+		end
+
+		send(player, {
+			type = "feedback",
+			kind = correct and "good" or "bad",
+			text = message,
+			hint = hint,
+			anomalyName = data.isAnomaly and Config.Anomalies[data.anomalyId] and Config.Anomalies[data.anomalyId].name or nil,
+			correct = correct,
+		})
+
+		task.wait(1.6)
+		WorldBuilder.clearPhysical()
+		currentData = nil
+		currentModel = nil
+		task.wait(0.8)
+	end
+
+	local stars = 1
+	if stats.mistakes == 0 then
+		stars = 3
+	elseif stats.mistakes <= 2 then
+		stars = 2
+	end
+
+	local payout = 100 + stats.correct * 30 + stats.caught * 50 - stats.mistakes * 20
+	payout = math.max(0, payout)
+
+	send(player, {
+		type = "result",
+		stars = stars,
+		payout = payout,
+		tunnelSuccess = true,
+		stats = {
+			correct = stats.correct,
+			mistakes = stats.mistakes,
+			caught = stats.caught,
+			missed = stats.anomaliesOnBoard,
+			total = stats.total,
+		},
+	})
+end
+
+local function startShift(player)
+	if shiftRunning or not player or not player.Parent then
+		return
+	end
+
+	shiftRunning = true
+	activePlayer = player
+
+	task.spawn(function()
+		local ok, err = pcall(runShift, player)
+		if not ok then
+			warn("[NightConductor] physical shift error: " .. tostring(err))
+		end
+		shiftRunning = false
+	end)
+end
+
+function PhysicalService.init()
+	WorldBuilder.buildVestibule()
+
+	Remotes.PhysicalDecide.OnServerEvent:Connect(function(player, decision)
+		if player ~= activePlayer or locked or not currentData then
+			return
+		end
+		if decision ~= "admit" and decision ~= "deny" then
+			return
+		end
+		locked = true
+		pendingDecision = decision
+		decisionSignal:Fire()
+	end)
+
+	Remotes.PhysicalRestart.OnServerEvent:Connect(function(player)
+		if player ~= activePlayer or shiftRunning then
+			return
+		end
+		startShift(player)
+	end)
+
+	Players.PlayerAdded:Connect(function(player)
+		task.spawn(function()
+			task.wait(2)
+			if not activePlayer then
+				startShift(player)
+			end
+		end)
+	end)
+
+	Players.PlayerRemoving:Connect(function(player)
+		if activePlayer == player then
+			activePlayer = nil
+			currentData = nil
+			currentModel = nil
+			locked = true
+		end
+		task.delay(1.5, function()
+			if not shiftRunning then
+				local nextPlayer = Players:GetPlayers()[1]
+				if nextPlayer then
+					startShift(nextPlayer)
+				end
+			end
+		end)
+	end)
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		task.spawn(function()
+			task.wait(1)
+			if not activePlayer then
+				startShift(player)
+			end
+		end)
+	end
+end
+
+return PhysicalService
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX8">
+    <Properties>
+      <string name="Name">PassengerFactory</string>
+      <ProtectedString name="Source"><![CDATA[-- Creates deterministic passenger cases for the prototype.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+
+local PassengerFactory = {}
+
+local function pick(rng, list)
+	return list[rng:NextInteger(1, #list)]
+end
+
+local function makeTicketNumber(rng)
+	return tostring(rng:NextInteger(10000, 99999))
+end
+
+local function makePassportNumber(rng)
+	return "NC-" .. tostring(rng:NextInteger(1000, 9999))
+end
+
+local function makeColor(rng)
+	return Color3.fromRGB(rng:NextInteger(35, 220), rng:NextInteger(35, 220), rng:NextInteger(35, 220))
+end
+
+local function cloneTable(value)
+	if type(value) ~= "table" then
+		return value
+	end
+	local result = {}
+	for key, child in pairs(value) do
+		result[key] = cloneTable(child)
+	end
+	return result
+end
+
+-- The first shift is scripted so the player learns each tool once.
+-- Later shifts get 2-3 random anomalies.
+function PassengerFactory.buildPlan(seed)
+	if seed == 1 then
+		return {
+			[1] = nil,
+			[2] = "wrong_date",
+			[3] = "wrong_shadow",
+			[4] = "no_reflection",
+			[5] = "six_fingers",
+			[6] = nil,
+		}
+	end
+
+	local rng = Random.new(seed)
+	local anomalyIds = { "wrong_date", "wrong_shadow", "no_reflection", "six_fingers", "photo_mismatch" }
+	for index = #anomalyIds, 2, -1 do
+		local swap = rng:NextInteger(1, index)
+		anomalyIds[index], anomalyIds[swap] = anomalyIds[swap], anomalyIds[index]
+	end
+
+	local indices = { 1, 2, 3, 4, 5, 6 }
+	for index = #indices, 2, -1 do
+		local swap = rng:NextInteger(1, index)
+		indices[index], indices[swap] = indices[swap], indices[index]
+	end
+
+	local count = rng:NextInteger(2, 3)
+	local plan = {}
+	for index = 1, count do
+		plan[indices[index]] = anomalyIds[index]
+	end
+	return plan
+end
+
+function PassengerFactory.create(index, seed, anomalyId)
+	local rng = Random.new(seed + index * 7919)
+	local name = pick(rng, Config.PassengerNames)
+	local destination = pick(rng, Config.Destinations)
+	local origin = pick(rng, Config.Origins)
+	local contents = pick(rng, Config.LuggageContents)
+	local hat = pick(rng, Config.HatColors)
+	local eyeColor = pick(rng, Config.EyeColors)
+	local seat = tostring(index + 2) .. (index % 2 == 0 and "A" or "B")
+	local class = index % 3 == 0 and "first" or "second"
+	local ticketNumber = makeTicketNumber(rng)
+	local passportNumber = makePassportNumber(rng)
+	local price = rng:NextInteger(12, 48)
+
+	local data = {
+		id = "P" .. tostring(index),
+		name = name,
+		age = rng:NextInteger(18, 67),
+		species = "human",
+		seat = seat,
+		class = class,
+		destination = destination,
+		rule = Config.Rule,
+		isAnomaly = false,
+		anomalyId = nil,
+		extraFinger = false,
+		noReflection = false,
+		shadowWrong = false,
+		appearance = {
+			shirtColor = makeColor(rng),
+			pantsColor = makeColor(rng),
+			skinColor = Color3.fromRGB(rng:NextInteger(120, 220), rng:NextInteger(90, 180), rng:NextInteger(70, 150)),
+			hatColor = hat.color,
+			hatName = hat.name,
+			eyeColor = eyeColor,
+		},
+		ticket = {
+			number = ticketNumber,
+			from = "Станция 0",
+			to = destination,
+			date = Config.Today,
+			seat = seat,
+			class = class,
+			price = price,
+			stamp = "LIVE",
+		},
+		passport = {
+			number = passportNumber,
+			origin = origin,
+			seal = "СОЛОВЕЙ",
+			photoHatName = hat.name,
+			eyeColor = eyeColor,
+		},
+		luggage = {
+			tag = "T-" .. ticketNumber,
+			weight = rng:NextInteger(4, 24),
+			contents = contents,
+		},
+		answers = {
+			destination = "На " .. destination .. ".",
+			luggage = "Там " .. contents .. ".",
+			name = "Меня зовут " .. name .. ".",
+		},
+	}
+
+	if anomalyId == "wrong_date" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.ticket.date = "12.04.1912"
+		data.ticket.stamp = "ARCHIVE"
+		data.answers.destination = "В 1912-й. Там меня ждут."
+	elseif anomalyId == "no_reflection" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.noReflection = true
+		data.answers.name = "Я... не помню."
+	elseif anomalyId == "wrong_shadow" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.shadowWrong = true
+	elseif anomalyId == "six_fingers" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.extraFinger = true
+		data.answers.luggage = "Перчатки. Одна пара."
+	elseif anomalyId == "photo_mismatch" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		local otherHat = pick(rng, Config.HatColors)
+		while otherHat.name == hat.name do
+			otherHat = pick(rng, Config.HatColors)
+		end
+		data.passport.photoHatName = otherHat.name
+	end
+
+	return data
+end
+
+function PassengerFactory.publicData(data)
+	return {
+		id = data.id,
+		name = data.name,
+		age = data.age,
+		species = data.species,
+		seat = data.seat,
+		class = data.class,
+		destination = data.destination,
+		rule = data.rule,
+		ticket = cloneTable(data.ticket),
+		passport = cloneTable(data.passport),
+		luggage = cloneTable(data.luggage),
+		appearance = cloneTable(data.appearance),
+	}
+end
+
+return PassengerFactory
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX9">
+    <Properties>
+      <string name="Name">WorldBuilder</string>
+      <ProtectedString name="Source"><![CDATA[-- Builds the prototype station, train, booth and passenger models from primitives.
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local WorldBuilder = {}
+
+local WORLD_NAME = "NightConductorWorld"
+local PASSENGER_FOLDER = "NightConductorPassengers"
+
+WorldBuilder.spawnCFrame = CFrame.lookAt(Vector3.new(-8, 3, -18), Vector3.new(-8, 3, -12))
+WorldBuilder.boothCFrame = CFrame.lookAt(Vector3.new(-8, 4, -12), Vector3.new(-8, 4, -18))
+WorldBuilder.trainDoorCFrame = CFrame.lookAt(Vector3.new(-8, 4, -4.8), Vector3.new(-8, 4, 0))
+WorldBuilder.exitCFrame = CFrame.lookAt(Vector3.new(20, 4, -18), Vector3.new(30, 4, -18))
+WorldBuilder.startCFrame = CFrame.lookAt(Vector3.new(20, 4, -12), Vector3.new(-8, 4, -12))
+
+local function part(parent, name, size, cframe, color, material, transparency, canCollide)
+	local p = Instance.new("Part")
+	p.Name = name
+	p.Size = size
+	p.CFrame = cframe
+	p.Anchored = true
+	p.CanCollide = canCollide ~= false
+	p.Color = color or Color3.fromRGB(180, 180, 180)
+	p.Material = material or Enum.Material.SmoothPlastic
+	p.Transparency = transparency or 0
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	p.Parent = parent
+	return p
+end
+
+local function cylinder(parent, name, size, cframe, color, material)
+	local p = part(parent, name, size, cframe, color, material or Enum.Material.Metal, 0, false)
+	p.Shape = Enum.PartType.Cylinder
+	return p
+end
+
+local function addPointLight(parent, color, brightness, range)
+	local light = Instance.new("PointLight")
+	light.Color = color
+	light.Brightness = brightness
+	light.Range = range
+	light.Shadows = false
+	light.Parent = parent
+	return light
+end
+
+local function billboard(parent, text, offset, size)
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "Label"
+	gui.Size = size or UDim2.fromOffset(360, 100)
+	gui.StudsOffset = offset or Vector3.new(0, 2.5, 0)
+	gui.AlwaysOnTop = true
+	gui.LightInfluence = 0
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(255, 220, 150)
+	label.TextStrokeTransparency = 0.6
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBold
+	label.Parent = gui
+	return gui
+end
+
+local function buildLighting()
+	Lighting.ClockTime = 0
+	Lighting.Brightness = 1.4
+	Lighting.Ambient = Color3.fromRGB(18, 22, 34)
+	Lighting.OutdoorAmbient = Color3.fromRGB(25, 32, 50)
+	Lighting.FogEnd = 220
+	Lighting.FogColor = Color3.fromRGB(10, 12, 22)
+	Lighting.EnvironmentDiffuseScale = 0.45
+	Lighting.EnvironmentSpecularScale = 0.2
+
+	for _, child in ipairs(Lighting:GetChildren()) do
+		if child.Name == "PrototypeAtmosphere" or child.Name == "PrototypeBloom" or child.Name == "PrototypeColor" then
+			child:Destroy()
+		end
+	end
+
+	local atmosphere = Instance.new("Atmosphere")
+	atmosphere.Name = "PrototypeAtmosphere"
+	atmosphere.Density = 0.38
+	atmosphere.Haze = 2
+	atmosphere.Glare = 0.15
+	atmosphere.Color = Color3.fromRGB(120, 145, 190)
+	atmosphere.Decay = Color3.fromRGB(70, 80, 120)
+	atmosphere.Parent = Lighting
+
+	local bloom = Instance.new("BloomEffect")
+	bloom.Name = "PrototypeBloom"
+	bloom.Intensity = 0.45
+	bloom.Size = 24
+	bloom.Threshold = 0.9
+	bloom.Parent = Lighting
+
+	local color = Instance.new("ColorCorrectionEffect")
+	color.Name = "PrototypeColor"
+	color.TintColor = Color3.fromRGB(230, 238, 255)
+	color.Contrast = 0.05
+	color.Saturation = -0.08
+	color.Parent = Lighting
+end
+
+local function buildTrain(world)
+	local body = part(world, "TrainFloor", Vector3.new(60, 0.5, 14), CFrame.new(0, 1.25, 4), Color3.fromRGB(70, 45, 30), Enum.Material.WoodPlanks)
+	body.CanCollide = true
+
+	part(world, "TrainLeftWallA", Vector3.new(18, 6, 0.4), CFrame.new(-21, 4, -3), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainLeftWallB", Vector3.new(34, 6, 0.4), CFrame.new(13, 4, -3), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainRightWall", Vector3.new(60, 6, 0.4), CFrame.new(0, 4, 11), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainEndA", Vector3.new(0.4, 6, 14), CFrame.new(-30, 4, 4), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainEndB", Vector3.new(0.4, 6, 14), CFrame.new(30, 4, 4), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainRoof", Vector3.new(60, 0.5, 14), CFrame.new(0, 7.25, 4), Color3.fromRGB(18, 48, 38), Enum.Material.Wood)
+
+	for index = 1, 5 do
+		local x = -24 + (index - 1) * 12
+		part(world, "Window" .. index, Vector3.new(7, 3, 0.2), CFrame.new(x, 4.4, -3.24), Color3.fromRGB(130, 180, 210), Enum.Material.Glass, 0.55, false)
+	end
+
+	for _, x in ipairs({ -24, -12, 0, 12, 24 }) do
+		for _, z in ipairs({ -2.8, 10.8 }) do
+			cylinder(world, "Wheel", Vector3.new(0.8, 2.2, 2.2), CFrame.new(x, 1, z) * CFrame.Angles(0, math.rad(90), 0), Color3.fromRGB(30, 30, 30))
+		end
+	end
+
+	part(world, "BrassTrimTop", Vector3.new(60, 0.2, 0.25), CFrame.new(0, 6.8, -3.2), Color3.fromRGB(190, 150, 70), Enum.Material.Metal)
+	part(world, "BrassTrimBottom", Vector3.new(60, 0.2, 0.25), CFrame.new(0, 1.2, -3.2), Color3.fromRGB(190, 150, 70), Enum.Material.Metal)
+
+	local door = part(world, "TrainDoor", Vector3.new(8, 5.5, 0.3), CFrame.new(-8, 3.75, -3.2), Color3.fromRGB(190, 150, 70), Enum.Material.Metal)
+	door.Transparency = 0.35
+	part(world, "TrainStep", Vector3.new(8, 0.5, 3), CFrame.new(-8, 0.55, -4.8), Color3.fromRGB(80, 60, 40), Enum.Material.Wood)
+
+	local chimney = cylinder(world, "Chimney", Vector3.new(1.4, 2.8, 1.4), CFrame.new(-26, 9, 4) * CFrame.Angles(0, 0, math.rad(90)), Color3.fromRGB(40, 40, 45))
+	chimney.CanCollide = false
+
+	local headlight = part(world, "Headlight", Vector3.new(1.2, 1.2, 0.4), CFrame.new(-31, 5, 4), Color3.fromRGB(255, 220, 140), Enum.Material.Neon)
+	addPointLight(headlight, Color3.fromRGB(255, 210, 130), 2, 30)
+
+	for index = 1, 5 do
+		local x = -22 + (index - 1) * 10
+		part(world, "Seat" .. index, Vector3.new(7, 0.5, 2.5), CFrame.new(x, 2.1, 9.5), Color3.fromRGB(110, 35, 45), Enum.Material.Fabric)
+		part(world, "SeatBack" .. index, Vector3.new(7, 3, 0.4), CFrame.new(x, 3.5, 10.7), Color3.fromRGB(90, 25, 35), Enum.Material.Fabric)
+	end
+
+	for _, x in ipairs({ -20, 0, 20 }) do
+		local lamp = part(world, "TrainLamp", Vector3.new(1, 0.25, 1), CFrame.new(x, 6.95, 4), Color3.fromRGB(255, 210, 140), Enum.Material.Neon)
+		addPointLight(lamp, Color3.fromRGB(255, 190, 110), 1.2, 18)
+	end
+end
+
+local function buildStation(world)
+	part(world, "Platform", Vector3.new(90, 1, 26), CFrame.new(0, 0.5, -14), Color3.fromRGB(90, 85, 80), Enum.Material.Concrete)
+	part(world, "SafetyLine", Vector3.new(90, 0.08, 0.5), CFrame.new(0, 1.05, -1.6), Color3.fromRGB(230, 190, 70), Enum.Material.Neon, 0, false)
+
+	for _, x in ipairs({ -30, 30 }) do
+		local pole = part(world, "LampPole", Vector3.new(0.5, 7, 0.5), CFrame.new(x, 4, -12), Color3.fromRGB(35, 35, 40), Enum.Material.Metal)
+		pole.CanCollide = false
+		local lamp = part(world, "PlatformLamp", Vector3.new(1.4, 1.4, 1.4), CFrame.new(x, 7.6, -12), Color3.fromRGB(255, 210, 140), Enum.Material.Neon)
+		lamp.CanCollide = false
+		addPointLight(lamp, Color3.fromRGB(255, 190, 110), 2.2, 26)
+	end
+
+	local canopy = part(world, "Canopy", Vector3.new(44, 0.5, 16), CFrame.new(-4, 10, -18), Color3.fromRGB(30, 45, 40), Enum.Material.Metal)
+	canopy.CanCollide = false
+	for _, x in ipairs({ -24, 16 }) do
+		for _, z in ipairs({ -24, -10.5 }) do
+			part(world, "CanopyPillar", Vector3.new(0.5, 9, 0.5), CFrame.new(x, 5.2, z), Color3.fromRGB(40, 40, 45), Enum.Material.Metal)
+		end
+	end
+
+	local signPart = part(world, "StationSign", Vector3.new(14, 3, 0.5), CFrame.new(0, 8, -24), Color3.fromRGB(30, 40, 35), Enum.Material.Wood)
+	signPart.CanCollide = false
+	billboard(signPart, "STATION 0\nLAST LIGHT", Vector3.new(0, 0, 0), UDim2.fromOffset(520, 130))
+
+	local boothSign = part(world, "BoothSign", Vector3.new(5, 1.2, 0.3), CFrame.new(-8, 5.9, -15), Color3.fromRGB(30, 40, 35), Enum.Material.Wood)
+	boothSign.CanCollide = false
+	billboard(boothSign, "CONDUCTOR", Vector3.new(0, 0, 0), UDim2.fromOffset(300, 70))
+
+	local desk = part(world, "Desk", Vector3.new(7, 1.3, 2.6), CFrame.new(-8, 1.15, -15), Color3.fromRGB(80, 52, 32), Enum.Material.Wood)
+	desk.CanCollide = true
+	part(world, "DeskTop", Vector3.new(7.2, 0.2, 2.8), CFrame.new(-8, 1.9, -15), Color3.fromRGB(110, 75, 45), Enum.Material.Wood)
+	part(world, "TicketTray", Vector3.new(2.2, 0.15, 1.2), CFrame.new(-8.8, 2.05, -14.9), Color3.fromRGB(180, 140, 60), Enum.Material.Metal)
+	part(world, "Stamp", Vector3.new(0.6, 1, 0.6), CFrame.new(-6.4, 2.3, -14.9), Color3.fromRGB(120, 30, 30), Enum.Material.Metal)
+
+	local mirrorFrame = part(world, "MirrorFrame", Vector3.new(2.2, 2.8, 0.2), CFrame.new(-10.6, 3.3, -15), Color3.fromRGB(160, 120, 55), Enum.Material.Metal)
+	mirrorFrame.CanCollide = false
+	local mirrorGlass = part(world, "MirrorGlass", Vector3.new(1.8, 2.4, 0.06), CFrame.new(-10.6, 3.3, -15.1), Color3.fromRGB(180, 210, 230), Enum.Material.Glass, 0.25, false)
+	mirrorGlass.CanCollide = false
+
+	local lamp = part(world, "DeskLamp", Vector3.new(0.5, 0.9, 0.5), CFrame.new(-5.6, 2.9, -15), Color3.fromRGB(255, 210, 140), Enum.Material.Neon)
+	lamp.CanCollide = false
+	addPointLight(lamp, Color3.fromRGB(255, 190, 110), 1.6, 16)
+
+	local moon = part(world, "Moon", Vector3.new(34, 34, 34), CFrame.new(130, 95, -180), Color3.fromRGB(230, 235, 255), Enum.Material.Neon, 0, false)
+	moon.Shape = Enum.PartType.Ball
+	moon.CanCollide = false
+
+	local spawn = Instance.new("SpawnLocation")
+	spawn.Name = "ConductorSpawn"
+	spawn.Size = Vector3.new(7, 1, 7)
+	spawn.CFrame = CFrame.lookAt(Vector3.new(-8, 1.5, -18), Vector3.new(-8, 1.5, -12))
+	spawn.Anchored = true
+	spawn.CanCollide = true
+	spawn.Transparency = 1
+	spawn.Neutral = true
+	spawn.Duration = 0
+	spawn.Parent = world
+end
+
+function WorldBuilder.build()
+	local legacyBaseplate = Workspace:FindFirstChild("Baseplate")
+	if legacyBaseplate and legacyBaseplate:IsA("BasePart") then
+		legacyBaseplate:Destroy()
+	end
+
+	local old = Workspace:FindFirstChild(WORLD_NAME)
+	if old then
+		old:Destroy()
+	end
+
+	local oldPassengers = Workspace:FindFirstChild(PASSENGER_FOLDER)
+	if oldPassengers then
+		oldPassengers:Destroy()
+	end
+
+	local world = Instance.new("Folder")
+	world.Name = WORLD_NAME
+
+	part(world, "Baseplate", Vector3.new(260, 2, 260), CFrame.new(0, -1, 0), Color3.fromRGB(45, 48, 52), Enum.Material.Slate)
+	buildStation(world)
+	buildTrain(world)
+
+	world.Parent = Workspace
+	buildLighting()
+
+	local passengers = Instance.new("Folder")
+	passengers.Name = PASSENGER_FOLDER
+	passengers.Parent = Workspace
+end
+
+function WorldBuilder.clearPassengers()
+	local folder = Workspace:FindFirstChild(PASSENGER_FOLDER)
+	if folder then
+		folder:Destroy()
+	end
+end
+
+local function createPassengerModel(data)
+	local model = Instance.new("Model")
+	model.Name = "Passenger_" .. data.id
+
+	local skin = data.appearance.skinColor
+	local shirt = data.appearance.shirtColor
+	local pants = data.appearance.pantsColor
+	local hat = data.appearance.hatColor
+
+	local torso = part(model, "Torso", Vector3.new(2, 2, 1), CFrame.new(0, 3, 0), shirt, Enum.Material.Fabric, 0, false)
+	model.PrimaryPart = torso
+	part(model, "Head", Vector3.new(1.5, 1.5, 1.5), CFrame.new(0, 4.6, 0), skin, Enum.Material.SmoothPlastic, 0, false)
+	part(model, "Hat", Vector3.new(1.7, 0.4, 1.7), CFrame.new(0, 5.5, 0), hat, Enum.Material.Fabric, 0, false)
+	part(model, "LeftArm", Vector3.new(0.7, 2, 0.7), CFrame.new(-1.4, 3.1, 0), shirt, Enum.Material.Fabric, 0, false)
+	part(model, "RightArm", Vector3.new(0.7, 2, 0.7), CFrame.new(1.4, 3.1, 0), shirt, Enum.Material.Fabric, 0, false)
+	part(model, "LeftLeg", Vector3.new(0.8, 2, 0.8), CFrame.new(-0.5, 1.2, 0), pants, Enum.Material.Fabric, 0, false)
+	part(model, "RightLeg", Vector3.new(0.8, 2, 0.8), CFrame.new(0.5, 1.2, 0), pants, Enum.Material.Fabric, 0, false)
+	part(model, "LeftShoe", Vector3.new(0.9, 0.35, 1.1), CFrame.new(-0.5, 0.2, -0.15), Color3.fromRGB(35, 30, 30), Enum.Material.SmoothPlastic, 0, false)
+	part(model, "RightShoe", Vector3.new(0.9, 0.35, 1.1), CFrame.new(0.5, 0.2, -0.15), Color3.fromRGB(35, 30, 30), Enum.Material.SmoothPlastic, 0, false)
+
+	local shadowX = data.shadowWrong and 1.8 or 0
+	local shadowZ = data.shadowWrong and 0.8 or 0
+	local shadow = part(model, "Shadow", Vector3.new(2.4, 0.04, 1.4), CFrame.new(shadowX, -2.97, shadowZ), Color3.fromRGB(5, 5, 8), Enum.Material.SmoothPlastic, 0.55, false)
+	shadow.CanCollide = false
+
+	part(model, "LeftEye", Vector3.new(0.18, 0.18, 0.08), CFrame.new(-0.3, 4.78, -0.77), Color3.fromRGB(20, 20, 20), Enum.Material.SmoothPlastic, 0, false)
+	part(model, "RightEye", Vector3.new(0.18, 0.18, 0.08), CFrame.new(0.3, 4.78, -0.77), Color3.fromRGB(20, 20, 20), Enum.Material.SmoothPlastic, 0, false)
+	part(model, "Mouth", Vector3.new(0.5, 0.08, 0.08), CFrame.new(0, 4.35, -0.77), Color3.fromRGB(80, 30, 40), Enum.Material.SmoothPlastic, 0, false)
+
+	if data.extraFinger then
+		part(model, "ExtraFinger", Vector3.new(0.14, 0.45, 0.14), CFrame.new(1.72, 2.45, -0.15), skin, Enum.Material.SmoothPlastic, 0, false)
+	end
+
+	billboard(model.PrimaryPart, data.name, Vector3.new(0, 2.6, 0), UDim2.fromOffset(220, 44))
+
+	return model
+end
+
+function WorldBuilder.spawnPassenger(data)
+	local folder = Workspace:FindFirstChild(PASSENGER_FOLDER)
+	if not folder then
+		folder = Instance.new("Folder")
+		folder.Name = PASSENGER_FOLDER
+		folder.Parent = Workspace
+	end
+
+	local model = createPassengerModel(data)
+	model:PivotTo(WorldBuilder.startCFrame)
+	model.Parent = folder
+	return model
+end
+
+function WorldBuilder.movePassenger(model, targetCFrame, duration)
+	if not model or not model.PrimaryPart then
+		return
+	end
+
+	local value = Instance.new("CFrameValue")
+	value.Value = model:GetPivot()
+
+	local tween = TweenService:Create(
+		value,
+		TweenInfo.new(duration or 1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{ Value = targetCFrame }
+	)
+
+	local connection = value.Changed:Connect(function()
+		if model.Parent then
+			model:PivotTo(value.Value)
+		end
+	end)
+
+	tween:Play()
+	tween.Completed:Wait()
+	connection:Disconnect()
+	value:Destroy()
+end
+
+function WorldBuilder.removePassenger(model)
+	if model then
+		model:Destroy()
+	end
+end
+
+-- ===== v8 physical slice =====
+
+local PHYSICAL_WORLD = "NightConductorPhysicalWorld"
+local PHYSICAL_PASSENGERS = "NightConductorPhysicalPassengers"
+local REFLECTION_NAME = "NightConductorReflection"
+
+WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 4.2), Vector3.new(0, 4.0, -1))
+WorldBuilder.physicalNpc = CFrame.lookAt(Vector3.new(0, 0, -1), Vector3.new(0, 0, 3))
+
+local function surfaceLabel(partInstance, text, face, textSize)
+	local gui = Instance.new("SurfaceGui")
+	gui.Name = "Surface"
+	gui.Face = face or Enum.NormalId.Front
+	gui.CanvasSize = Vector2.new(600, 400)
+	gui.LightInfluence = 0
+	gui.Parent = partInstance
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Text"
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(40, 32, 24)
+	label.TextWrapped = true
+	label.TextScaled = true
+	label.Font = Enum.Font.Gotham
+	label.Parent = gui
+	return label
+end
+
+function WorldBuilder.buildVestibule()
+	local old = Workspace:FindFirstChild(WORLD_NAME)
+	if old then
+		old:Destroy()
+	end
+	local oldPhysical = Workspace:FindFirstChild(PHYSICAL_WORLD)
+	if oldPhysical then
+		oldPhysical:Destroy()
+	end
+	local baseplate = Workspace:FindFirstChild("Baseplate")
+	if baseplate then
+		baseplate:Destroy()
+	end
+
+	buildLighting()
+	Lighting.Brightness = 2.4
+	Lighting.Ambient = Color3.fromRGB(95, 85, 74)
+	Lighting.OutdoorAmbient = Color3.fromRGB(78, 73, 80)
+	Lighting.EnvironmentDiffuseScale = 0.6
+
+	local world = Instance.new("Folder")
+	world.Name = PHYSICAL_WORLD
+	world.Parent = Workspace
+
+	part(world, "Floor", Vector3.new(10, 0.4, 10), CFrame.new(0, -0.2, 0), Color3.fromRGB(42, 30, 22), Enum.Material.SmoothPlastic)
+	part(world, "Ceiling", Vector3.new(10, 0.4, 10), CFrame.new(0, 6, 0), Color3.fromRGB(26, 30, 28), Enum.Material.Wood)
+	part(world, "WallBack", Vector3.new(10, 6.2, 0.4), CFrame.new(0, 3, -5), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+	part(world, "WallFront", Vector3.new(10, 6.2, 0.4), CFrame.new(0, 3, 5), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+	part(world, "WallLeft", Vector3.new(0.4, 6.2, 10), CFrame.new(-5, 3, 0), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+	part(world, "WallRight", Vector3.new(0.4, 6.2, 10), CFrame.new(5, 3, 0), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+
+	part(world, "Rug", Vector3.new(5.4, 0.04, 3.4), CFrame.new(0, 0.02, 0.6), Color3.fromRGB(80, 28, 34), Enum.Material.Fabric).CanCollide = false
+
+	local door = part(world, "Door", Vector3.new(2.1, 3.2, 0.16), CFrame.new(0, 1.6, -4.78), Color3.fromRGB(44, 30, 22), Enum.Material.Wood)
+	part(world, "DoorFrameTop", Vector3.new(2.4, 0.2, 0.3), CFrame.new(0, 3.3, -4.74), Color3.fromRGB(120, 92, 52), Enum.Material.Metal)
+	part(world, "DoorHandle", Vector3.new(0.12, 0.12, 0.5), CFrame.new(0.7, 1.5, -4.6), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+	door.CanCollide = false
+
+	local rugLight = part(world, "RugLight", Vector3.new(0.2, 0.2, 0.2), CFrame.new(0, 5.7, 0), Color3.fromRGB(255, 220, 160), Enum.Material.Neon)
+	rugLight.CanCollide = false
+	addPointLight(rugLight, Color3.fromRGB(255, 214, 150), 1.8, 24)
+
+	local lampAnchor = part(world, "CeilingLamp", Vector3.new(0.6, 0.1, 0.6), CFrame.new(-2.2, 5.86, -1), Color3.fromRGB(255, 230, 180), Enum.Material.Neon)
+	lampAnchor.CanCollide = false
+	addPointLight(lampAnchor, Color3.fromRGB(255, 220, 160), 2.4, 28)
+
+	local sconce = part(world, "Sconce", Vector3.new(0.18, 0.5, 0.36), CFrame.new(-4.78, 4.1, 2.6), Color3.fromRGB(255, 215, 150), Enum.Material.Neon)
+	sconce.CanCollide = false
+	sconce.Transparency = 1
+	addPointLight(sconce, Color3.fromRGB(255, 210, 150), 1.2, 14)
+
+	local poster = part(world, "RulesPoster", Vector3.new(0.06, 1.7, 2.1), CFrame.new(-4.76, 2.9, 1.6), Color3.fromRGB(175, 155, 120), Enum.Material.SmoothPlastic)
+	surfaceLabel(poster, "ПРАВИЛА СМЕНЫ\n\nДАТА · ИМЯ · ФОТО\nТЕНЬ · ОТРАЖЕНИЕ · РУКИ\n\nВсё совпало — ПРОПУСТИТЬ.\nЧто-то не так — ОТКАТАТЬ.", Enum.NormalId.Right)
+	local posterSurface = poster:FindFirstChildOfClass("SurfaceGui")
+	if posterSurface then
+		posterSurface.LightInfluence = 0.35
+	end
+
+	local clockFace = part(world, "Clock", Vector3.new(0.08, 1.1, 1.1), CFrame.new(0, 4.2, -4.76) * CFrame.Angles(0, math.rad(90), 0), Color3.fromRGB(235, 225, 200), Enum.Material.SmoothPlastic)
+	clockFace.Shape = Enum.PartType.Cylinder
+
+	local desk = part(world, "Table", Vector3.new(2.6, 0.12, 1.2), CFrame.new(-2.6, 2.7, 2.2), Color3.fromRGB(62, 42, 28), Enum.Material.SmoothPlastic)
+	desk.CanCollide = true
+	for _, offset in ipairs({ Vector3.new(-1.15, 0, -0.48), Vector3.new(1.15, 0, -0.48), Vector3.new(-1.15, 0, 0.48), Vector3.new(1.15, 0, 0.48) }) do
+		part(world, "TableLeg", Vector3.new(0.12, 2.7, 0.12), CFrame.new(-2.6, 1.35, 2.2) * CFrame.new(offset), Color3.fromRGB(52, 34, 22), Enum.Material.Wood)
+	end
+
+	local props = Instance.new("Folder")
+	props.Name = "Props"
+	props.Parent = world
+
+	local function prop(name, size, relative, color, material)
+		local p = part(props, name, size, CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(relative), color, material or Enum.Material.SmoothPlastic)
+		p.CanCollide = false
+		return p
+	end
+
+	-- Documents
+	local ticket = prop("Ticket", Vector3.new(0.62, 0.02, 0.38), Vector3.new(-0.85, 0, 0.18), Color3.fromRGB(225, 214, 184))
+	ticket.Material = Enum.Material.SmoothPlastic
+	surfaceLabel(ticket, "БИЛЕТ", Enum.NormalId.Top)
+
+	local passport = prop("Passport", Vector3.new(0.5, 0.02, 0.36), Vector3.new(-0.15, 0, -0.05), Color3.fromRGB(70, 50, 40))
+	surfaceLabel(passport, "ПАСПОРТ", Enum.NormalId.Top)
+
+	-- Tools
+	local lamp = prop("Lamp", Vector3.new(0.34, 0.5, 0.34), Vector3.new(0.85, 0.25, -0.2), Color3.fromRGB(150, 120, 60), Enum.Material.Metal)
+	part(lamp, "Glass", Vector3.new(0.26, 0.3, 0.26), lamp.CFrame * CFrame.new(0, 0.03, 0), Color3.fromRGB(255, 235, 170), Enum.Material.Neon).CanCollide = false
+
+	local mirror = prop("Mirror", Vector3.new(0.5, 0.7, 0.06), Vector3.new(0.85, 0.36, 0.3), Color3.fromRGB(150, 150, 160), Enum.Material.Metal)
+	mirror.CFrame = CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(0.85, 0.36, 0.3) * CFrame.Angles(0, math.rad(15), 0)
+	part(mirror, "Glass", Vector3.new(0.4, 0.6, 0.02), mirror.CFrame * CFrame.new(0, 0, 0.04), Color3.fromRGB(190, 210, 215), Enum.Material.Glass).CanCollide = false
+
+	local magnifier = prop("Magnifier", Vector3.new(0.34, 0.34, 0.05), Vector3.new(-0.15, 0.04, 0.42), Color3.fromRGB(150, 120, 60), Enum.Material.Metal)
+	magnifier.Shape = Enum.PartType.Cylinder
+	magnifier.CFrame = CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(-0.15, 0.04, 0.42) * CFrame.Angles(0, 0, math.rad(90))
+
+	local stampAdmit = prop("StampAdmit", Vector3.new(0.24, 0.42, 0.24), Vector3.new(-0.55, 0.21, 0.42), Color3.fromRGB(40, 110, 65), Enum.Material.Metal)
+	part(stampAdmit, "Top", Vector3.new(0.3, 0.1, 0.3), stampAdmit.CFrame * CFrame.new(0, 0.2, 0), Color3.fromRGB(40, 110, 65), Enum.Material.Metal).CanCollide = false
+	local stampDeny = prop("StampDeny", Vector3.new(0.24, 0.42, 0.24), Vector3.new(-0.24, 0.21, 0.42), Color3.fromRGB(120, 45, 50), Enum.Material.Metal)
+	part(stampDeny, "Top", Vector3.new(0.3, 0.1, 0.3), stampDeny.CFrame * CFrame.new(0, 0.2, 0), Color3.fromRGB(120, 45, 50), Enum.Material.Metal).CanCollide = false
+
+	-- Reflection holder lives in ReplicatedStorage, not rendered in the room.
+
+	-- Reflection holder lives in ReplicatedStorage, not rendered in the room.
+	local oldReflection = ReplicatedStorage:FindFirstChild(REFLECTION_NAME)
+	if oldReflection then
+		oldReflection:Destroy()
+	end
+
+	return {
+		world = world,
+		props = props,
+		spawn = WorldBuilder.physicalSpawn,
+		npc = WorldBuilder.physicalNpc,
+	}
+end
+
+local function buildHand(model, skin, extraFinger)
+	local hand = Instance.new("Model")
+	hand.Name = "RightHand"
+	hand.Parent = model
+
+	local palm = part(hand, "Palm", Vector3.new(0.42, 0.5, 0.18), CFrame.new(1.5, 2.55, -0.58), skin, Enum.Material.SmoothPlastic, 0, false)
+	palm.CanCollide = false
+
+	local count = extraFinger and 6 or 5
+	local startX = 1.5 - (count - 1) * 0.055
+	for index = 1, count do
+		local finger = part(
+			hand,
+			"Finger" .. tostring(index),
+			Vector3.new(0.08, 0.42, 0.1),
+			CFrame.new(startX + (index - 1) * 0.11, 2.13, -0.6),
+			skin,
+			Enum.Material.SmoothPlastic,
+			0,
+			false
+		)
+		finger.CanCollide = false
+	end
+
+	return hand
+end
+
+function WorldBuilder.clearPhysical()
+	local folder = Workspace:FindFirstChild(PHYSICAL_PASSENGERS)
+	if folder then
+		folder:Destroy()
+	end
+	local reflection = ReplicatedStorage:FindFirstChild(REFLECTION_NAME)
+	if reflection then
+		reflection:Destroy()
+	end
+end
+
+function WorldBuilder.spawnPhysicalPassenger(data)
+	WorldBuilder.clearPhysical()
+
+	local folder = Instance.new("Folder")
+	folder.Name = PHYSICAL_PASSENGERS
+	folder.Parent = Workspace
+
+	local model = createPassengerModel(data)
+	model.Name = "PhysicalPassenger_" .. data.id
+
+	-- The fake shadow is the only shadow; real part shadows would fight it.
+	local oldShadow = model:FindFirstChild("Shadow")
+	if oldShadow then
+		oldShadow:Destroy()
+	end
+	for _, child in ipairs(model:GetDescendants()) do
+		if child:IsA("BasePart") then
+			child.CastShadow = false
+		end
+	end
+
+	buildHand(model, data.appearance.skinColor, data.extraFinger)
+
+	-- The physical slice shows the name in the HUD, not as a floating label.
+	local billboardLabel = model:FindFirstChild("Torso") and model.Torso:FindFirstChild("Label")
+	if billboardLabel then
+		billboardLabel:Destroy()
+	end
+
+	local shadowX = data.shadowWrong and 1.0 or -0.9
+	local shadow = part(model, "FloorShadow", Vector3.new(2.2, 0.03, 1.3), CFrame.new(shadowX, 0.06, -1), Color3.fromRGB(4, 4, 7), Enum.Material.SmoothPlastic, 0.45, false)
+	shadow.CanCollide = false
+	shadow.CastShadow = false
+
+	local npcPosition = WorldBuilder.physicalNpc.Position
+	model:PivotTo(WorldBuilder.physicalNpc)
+	model.Parent = folder
+
+	-- A reflection source exists only when the passenger should have a reflection.
+	-- The client renders it inside the hand mirror.
+	if not data.noReflection then
+		local source = Instance.new("Model")
+		source.Name = REFLECTION_NAME
+		for _, partName in ipairs({ "Torso", "Head", "Hat", "LeftArm", "RightArm", "LeftLeg", "RightLeg", "LeftShoe", "RightShoe" }) do
+			local original = model:FindFirstChild(partName)
+			if original then
+				local clone = original:Clone()
+				clone.Anchored = true
+				clone.CastShadow = false
+				clone.Parent = source
+			end
+		end
+		source.PrimaryPart = source:FindFirstChild("Torso")
+		source:PivotTo(CFrame.new(0, 0, 0))
+		source.Parent = ReplicatedStorage
+	end
+
+	return model
+end
+
+return WorldBuilder
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  </Item>
+  </Item>
+  <Item class="StarterPlayer" referent="RBX17">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+  <Item class="StarterPlayerScripts" referent="RBX12">
+    <Properties>
+      <string name="Name">StarterPlayerScripts</string>
+    </Properties>
+  <Item class="LocalScript" referent="RBX11">
+    <Properties>
+      <string name="Name">PhysicalClient</string>
+      <ProtectedString name="Source"><![CDATA[-- v8 physical slice client: first-person vestibule, props, documents, mirror, magnifier, stamps.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local StarterGui = game:GetService("StarterGui")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Remotes = require(Shared:WaitForChild("Remotes"))
+
+local function new(className, props, children)
+	local instance = Instance.new(className)
+	for key, value in pairs(props or {}) do
+		instance[key] = value
+	end
+	for _, child in ipairs(children or {}) do
+		child.Parent = instance
+	end
+	return instance
+end
+
+local function corner(instance, radius)
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, radius or 8)
+	c.Parent = instance
+	return c
+end
+
+local function stroke(instance, color, thickness, transparency)
+	local s = Instance.new("UIStroke")
+	s.Color = color or Color3.fromRGB(180, 150, 90)
+	s.Thickness = thickness or 1.5
+	s.Transparency = transparency or 0.2
+	s.Parent = instance
+	return s
+end
+
+local gui = new("ScreenGui", {
+	Name = "NightConductorPhysicalUI",
+	ResetOnSpawn = false,
+	IgnoreGuiInset = false,
+	DisplayOrder = 50,
+})
+gui.Parent = playerGui
+
+local taskFrame = new("Frame", {
+	Name = "TaskBar",
+	AnchorPoint = Vector2.new(0.5, 0),
+	Position = UDim2.new(0.5, 0, 0, 12),
+	Size = UDim2.fromOffset(680, 54),
+	BackgroundColor3 = Color3.fromRGB(14, 22, 20),
+	BackgroundTransparency = 0.08,
+	BorderSizePixel = 0,
+})
+corner(taskFrame, 8)
+stroke(taskFrame, Color3.fromRGB(150, 120, 60), 1.2, 0.3)
+taskFrame.Parent = gui
+
+local taskLabel = new("TextLabel", {
+	Size = UDim2.new(1, -20, 1, 0),
+	Position = UDim2.fromOffset(10, 0),
+	BackgroundTransparency = 1,
+	Text = "ОЖИДАНИЕ ПАССАЖИРА",
+	TextColor3 = Color3.fromRGB(255, 232, 180),
+	Font = Enum.Font.GothamBold,
+	TextSize = 16,
+	TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	TextYAlignment = Enum.TextYAlignment.Center,
+})
+taskLabel.Parent = taskFrame
+
+local nameLabel = new("TextLabel", {
+	Position = UDim2.fromOffset(22, 18),
+	Size = UDim2.fromOffset(420, 26),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(255, 225, 165),
+	Font = Enum.Font.GothamBlack,
+	TextSize = 22,
+	TextXAlignment = Enum.TextXAlignment.Left,
+})
+nameLabel.Parent = gui
+
+local metaLabel = new("TextLabel", {
+	Position = UDim2.fromOffset(22, 44),
+	Size = UDim2.fromOffset(520, 18),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(165, 190, 180),
+	Font = Enum.Font.Gotham,
+	TextSize = 13,
+	TextXAlignment = Enum.TextXAlignment.Left,
+})
+metaLabel.Parent = gui
+
+local progressLabel = new("TextLabel", {
+	AnchorPoint = Vector2.new(1, 0),
+	Position = UDim2.new(1, -22, 0, 22),
+	Size = UDim2.fromOffset(120, 22),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(255, 220, 150),
+	Font = Enum.Font.GothamBold,
+	TextSize = 15,
+	TextXAlignment = Enum.TextXAlignment.Right,
+})
+progressLabel.Parent = gui
+
+local crosshair = new("Frame", {
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromOffset(4, 4),
+	BackgroundColor3 = Color3.fromRGB(255, 245, 220),
+	BorderSizePixel = 0,
+	BackgroundTransparency = 0.25,
+})
+corner(crosshair, 2)
+crosshair.Parent = gui
+
+local hintBar = new("TextLabel", {
+	AnchorPoint = Vector2.new(0, 1),
+	Position = UDim2.new(0, 22, 1, -10),
+	Size = UDim2.fromOffset(620, 20),
+	BackgroundTransparency = 1,
+	Text = "E — взаимодействие   ·   1–5 — инструменты",
+	TextColor3 = Color3.fromRGB(180, 200, 190),
+	Font = Enum.Font.Gotham,
+	TextSize = 13,
+	TextXAlignment = Enum.TextXAlignment.Left,
+})
+hintBar.Parent = gui
+
+local contextFrame = new("Frame", {
+	Name = "Context",
+	AnchorPoint = Vector2.new(0.5, 1),
+	Position = UDim2.new(0.5, 0, 1, -42),
+	Size = UDim2.fromOffset(430, 38),
+	BackgroundColor3 = Color3.fromRGB(12, 18, 16),
+	BackgroundTransparency = 0.05,
+	BorderSizePixel = 0,
+	Visible = false,
+	ZIndex = 25,
+})
+corner(contextFrame, 8)
+stroke(contextFrame, Color3.fromRGB(255, 205, 90), 1.5, 0.25)
+contextFrame.Parent = gui
+
+local contextLabel = new("TextLabel", {
+	Size = UDim2.new(1, -16, 1, 0),
+	Position = UDim2.fromOffset(8, 0),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(255, 238, 205),
+	Font = Enum.Font.GothamBold,
+	TextSize = 16,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	TextYAlignment = Enum.TextYAlignment.Center,
+	ZIndex = 26,
+})
+contextLabel.Parent = contextFrame
+
+-- Toast
+local toast = new("Frame", {
+	Name = "Toast",
+	AnchorPoint = Vector2.new(0.5, 0),
+	Position = UDim2.new(0.5, 0, 0, 78),
+	Size = UDim2.fromOffset(660, 56),
+	BackgroundColor3 = Color3.fromRGB(12, 18, 16),
+	BackgroundTransparency = 0.06,
+	BorderSizePixel = 0,
+	Visible = false,
+	ZIndex = 20,
+})
+corner(toast, 8)
+local toastStroke = stroke(toast, Color3.fromRGB(90, 190, 120), 1.5, 0.15)
+toast.Parent = gui
+
+local toastLabel = new("TextLabel", {
+	Size = UDim2.new(1, -24, 1, -8),
+	Position = UDim2.fromOffset(12, 4),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(230, 240, 220),
+	Font = Enum.Font.Gotham,
+	TextSize = 14,
+	TextWrapped = true,
+	TextYAlignment = Enum.TextYAlignment.Center,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 21,
+})
+toastLabel.Parent = toast
+
+-- Paper document view
+local paperOverlay = new("Frame", {
+	Name = "PaperOverlay",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundColor3 = Color3.fromRGB(5, 8, 10),
+	BackgroundTransparency = 0.45,
+	BorderSizePixel = 0,
+	Visible = false,
+	ZIndex = 40,
+})
+paperOverlay.Parent = gui
+
+local paperCard = new("Frame", {
+	Name = "Paper",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(0.66, 0.78),
+	BackgroundColor3 = Color3.fromRGB(242, 233, 210),
+	BorderSizePixel = 0,
+	ZIndex = 41,
+})
+corner(paperCard, 6)
+stroke(paperCard, Color3.fromRGB(120, 95, 55), 2, 0.1)
+paperCard.Parent = paperOverlay
+
+local paperTitle = new("TextLabel", {
+	Position = UDim2.fromOffset(24, 16),
+	Size = UDim2.new(1, -48, 0, 26),
+	BackgroundTransparency = 1,
+	Text = "БИЛЕТ",
+	TextColor3 = Color3.fromRGB(90, 55, 25),
+	Font = Enum.Font.GothamBlack,
+	TextSize = 22,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	ZIndex = 42,
+})
+paperTitle.Parent = paperCard
+
+local paperText = new("TextLabel", {
+	Position = UDim2.fromOffset(24, 54),
+	Size = UDim2.new(1, -48, 1, -100),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(42, 34, 24),
+	Font = Enum.Font.Gotham,
+	TextSize = 19,
+	TextWrapped = true,
+	TextYAlignment = Enum.TextYAlignment.Top,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	ZIndex = 42,
+})
+paperText.Parent = paperCard
+
+local paperHint = new("TextLabel", {
+	AnchorPoint = Vector2.new(0.5, 1),
+	Position = UDim2.new(0.5, 0, 1, -12),
+	Size = UDim2.new(1, -48, 0, 18),
+	BackgroundTransparency = 1,
+	Text = "E — закрыть",
+	TextColor3 = Color3.fromRGB(120, 95, 60),
+	Font = Enum.Font.Gotham,
+	TextSize = 14,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 42,
+})
+paperHint.Parent = paperCard
+
+-- Lens
+local lens = new("Frame", {
+	Name = "Lens",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromOffset(360, 360),
+	BackgroundTransparency = 1,
+	Visible = false,
+	ZIndex = 15,
+})
+corner(lens, 180)
+local lensStroke = stroke(lens, Color3.fromRGB(8, 8, 8), 26, 0.05)
+lensStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+local lensInner = new("UIStroke", {
+	Color = Color3.fromRGB(255, 210, 120),
+	Thickness = 2,
+	Transparency = 0.25,
+})
+lensInner.Parent = lens
+lens.Parent = gui
+
+-- Mirror view
+local mirrorOverlay = new("Frame", {
+	Name = "MirrorOverlay",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromOffset(380, 460),
+	BackgroundColor3 = Color3.fromRGB(18, 22, 24),
+	BorderSizePixel = 0,
+	Visible = false,
+	ClipsDescendants = true,
+	ZIndex = 18,
+})
+corner(mirrorOverlay, 180)
+stroke(mirrorOverlay, Color3.fromRGB(190, 190, 200), 8, 0.1)
+mirrorOverlay.Parent = gui
+
+local mirrorViewport = new("ViewportFrame", {
+	Name = "View",
+	Position = UDim2.fromOffset(16, 16),
+	Size = UDim2.new(1, -32, 1, -56),
+	BackgroundColor3 = Color3.fromRGB(6, 8, 10),
+	Ambient = Color3.fromRGB(150, 150, 150),
+	LightColor = Color3.fromRGB(255, 240, 220),
+	LightDirection = Vector3.new(-1, -1, -1),
+	ZIndex = 19,
+})
+mirrorViewport.Parent = mirrorOverlay
+
+local mirrorWorld = new("WorldModel", {})
+mirrorWorld.Parent = mirrorViewport
+local mirrorCamera = new("Camera", {
+	CFrame = CFrame.lookAt(Vector3.new(0, 3.2, 8), Vector3.new(0, 2.6, 0)),
+})
+mirrorCamera.Parent = mirrorViewport
+mirrorViewport.CurrentCamera = mirrorCamera
+
+local mirrorCaption = new("TextLabel", {
+	AnchorPoint = Vector2.new(0.5, 1),
+	Position = UDim2.new(0.5, 0, 1, -10),
+	Size = UDim2.new(1, -40, 0, 24),
+	BackgroundTransparency = 1,
+	Text = "ЗЕРКАЛО",
+	TextColor3 = Color3.fromRGB(200, 210, 210),
+	Font = Enum.Font.GothamBold,
+	TextSize = 14,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 20,
+})
+mirrorCaption.Parent = mirrorOverlay
+
+local mirrorHint = new("TextLabel", {
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.new(1, -60, 0, 60),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(220, 225, 220),
+	Font = Enum.Font.Gotham,
+	TextSize = 15,
+	TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 20,
+	Visible = false,
+})
+mirrorHint.Parent = mirrorOverlay
+
+-- Result
+local resultOverlay = new("Frame", {
+	Name = "ResultOverlay",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundColor3 = Color3.fromRGB(5, 8, 10),
+	BackgroundTransparency = 0.25,
+	BorderSizePixel = 0,
+	Visible = false,
+	ZIndex = 60,
+})
+resultOverlay.Parent = gui
+
+local resultCard = new("Frame", {
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(0.5, 0.72),
+	BackgroundColor3 = Color3.fromRGB(22, 32, 30),
+	BorderSizePixel = 0,
+	ZIndex = 61,
+})
+corner(resultCard, 14)
+stroke(resultCard, Color3.fromRGB(150, 120, 60), 2, 0.2)
+resultCard.Parent = resultOverlay
+
+local resultTitle = new("TextLabel", {
+	Position = UDim2.fromOffset(20, 18),
+	Size = UDim2.new(1, -40, 0, 34),
+	BackgroundTransparency = 1,
+	Text = "СМЕНА ОКОНЧЕНА",
+	TextColor3 = Color3.fromRGB(255, 225, 160),
+	Font = Enum.Font.GothamBlack,
+	TextSize = 26,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 62,
+})
+resultTitle.Parent = resultCard
+
+local resultStars = new("TextLabel", {
+	Position = UDim2.fromOffset(20, 58),
+	Size = UDim2.new(1, -40, 0, 40),
+	BackgroundTransparency = 1,
+	Text = "★★★",
+	TextColor3 = Color3.fromRGB(255, 210, 90),
+	Font = Enum.Font.GothamBlack,
+	TextSize = 30,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 62,
+})
+resultStars.Parent = resultCard
+
+local resultStats = new("TextLabel", {
+	Position = UDim2.fromOffset(28, 110),
+	Size = UDim2.new(1, -56, 0, 120),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(215, 225, 210),
+	Font = Enum.Font.Gotham,
+	TextSize = 16,
+	TextYAlignment = Enum.TextYAlignment.Top,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	ZIndex = 62,
+})
+resultStats.Parent = resultCard
+
+local resultPayout = new("TextLabel", {
+	Position = UDim2.fromOffset(20, 238),
+	Size = UDim2.new(1, -40, 0, 32),
+	BackgroundTransparency = 1,
+	Text = "+0 Искр",
+	TextColor3 = Color3.fromRGB(255, 220, 140),
+	Font = Enum.Font.GothamBold,
+	TextSize = 22,
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 62,
+})
+resultPayout.Parent = resultCard
+
+local restartButton = new("TextButton", {
+	AnchorPoint = Vector2.new(0.5, 1),
+	Position = UDim2.new(0.5, 0, 1, -22),
+	Size = UDim2.new(0.7, 0, 0, 44),
+	BackgroundColor3 = Color3.fromRGB(115, 85, 40),
+	BorderSizePixel = 0,
+	Text = "ЕЩЁ РЕЙС",
+	TextColor3 = Color3.fromRGB(255, 240, 215),
+	Font = Enum.Font.GothamBold,
+	TextSize = 16,
+	ZIndex = 62,
+})
+corner(restartButton, 8)
+restartButton.Parent = resultCard
+
+-- State
+local currentData = nil
+local currentNpc = nil
+local currentIndex = 0
+local currentTotal = 0
+local tutorialActive = false
+local paperOpen = false
+local paperOpenedAt = 0
+local mirrorOpen = false
+local mirrorBuildKey = nil
+local zoomed = false
+local stampBusy = false
+local readTicket = false
+local readPassport = false
+local toolsById = {}
+local props = {}
+local hiddenProps = {}
+local handHighlight = nil
+local interactables = {}
+local interactableByProp = {}
+local currentInteractable = nil
+local lastContextAt = 0
+
+local function showToast(text, kind)
+	toastLabel.Text = text
+	toast.BackgroundColor3 = kind == "bad" and Color3.fromRGB(45, 18, 22) or (kind == "good" and Color3.fromRGB(18, 45, 32) or Color3.fromRGB(18, 24, 22))
+	toastStroke.Color = kind == "bad" and Color3.fromRGB(220, 100, 100) or (kind == "good" and Color3.fromRGB(90, 190, 120) or Color3.fromRGB(160, 130, 70))
+	toast.Visible = true
+	local token = (toast:GetAttribute("Token") or 0) + 1
+	toast:SetAttribute("Token", token)
+	task.delay(3.2, function()
+		if toast:GetAttribute("Token") == token then
+			toast.Visible = false
+		end
+	end)
+end
+
+local function setTask(text)
+	taskLabel.Text = text
+end
+
+local function setPapers()
+	if not currentData then
+		paperTitle.Text = "ДОКУМЕНТЫ"
+		paperText.Text = "Пассажира ещё нет."
+		return
+	end
+	if paperTitle.Text == "ПАСПОРТ" then
+		paperTitle.Text = "ПАСПОРТ"
+		paperText.Text = table.concat({
+			"ИМЯ: " .. currentData.name,
+			"ВОЗРАСТ: " .. tostring(currentData.age),
+			"№ ПАСПОРТА: " .. currentData.passport.number,
+			"МЕСТО РОЖДЕНИЯ: " .. currentData.passport.origin,
+			"",
+			"ФОТО: " .. currentData.passport.photoHatName .. " шляпа",
+			"ГЛАЗА: " .. currentData.passport.eyeColor,
+			"",
+			"Печать: " .. currentData.passport.seal,
+		}, "\n")
+	else
+		paperTitle.Text = "БИЛЕТ"
+		paperText.Text = table.concat({
+			"БИЛЕТ № " .. currentData.ticket.number,
+			"КЛАСС: " .. (currentData.ticket.class == "first" and "Первый" or "Второй"),
+			"МЕСТО: " .. currentData.ticket.seat,
+			"",
+			"ОТКУДА: Станция 0",
+			"КУДА: " .. currentData.ticket.to,
+			"ДАТА: " .. currentData.ticket.date,
+			"ШТАМП: " .. currentData.ticket.stamp,
+			"",
+			"ЦЕНА: " .. tostring(currentData.ticket.price) .. " искр",
+		}, "\n")
+	end
+end
+
+local function openPaper(kind)
+	if not currentData or paperOpen then
+		return
+	end
+	paperOpen = true
+	paperOpenedAt = os.clock()
+	paperTitle.Text = kind == "passport" and "ПАСПОРТ" or "БИЛЕТ"
+	setPapers()
+	paperOverlay.Visible = true
+	if kind == "ticket" then
+		readTicket = true
+	else
+		readPassport = true
+	end
+	if tutorialActive and readTicket and readPassport then
+		setTask("Документы прочитаны. Всё совпало? Возьми зелёную печать и поставь её на билет.")
+	end
+end
+
+local function closePaper()
+	paperOpen = false
+	paperOverlay.Visible = false
+end
+
+local function raycastAhead(maxDistance)
+	local cam = workspace.CurrentCamera
+	if not cam then
+		return nil
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = player.Character and { player.Character } or {}
+	return workspace:Raycast(cam.CFrame.Position, cam.CFrame.LookVector * (maxDistance or 20), params)
+end
+
+local function getNpc()
+	if currentNpc and currentNpc.Parent then
+		return currentNpc
+	end
+	local folder = workspace:FindFirstChild("NightConductorPhysicalPassengers")
+	if folder then
+		currentNpc = folder:FindFirstChildWhichIsA("Model")
+	end
+	return currentNpc
+end
+
+local function isNpcPart(instance)
+	local npc = getNpc()
+	if not npc or not instance then
+		return false
+	end
+	return instance:IsDescendantOf(npc)
+end
+
+local function clearHighlight()
+	if handHighlight then
+		handHighlight:Destroy()
+		handHighlight = nil
+	end
+end
+
+local function setZoom(on)
+	if zoomed == on then
+		return
+	end
+	zoomed = on
+	local cam = workspace.CurrentCamera
+	if cam then
+		TweenService:Create(cam, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			FieldOfView = on and 28 or 70,
+		}):Play()
+	end
+	lens.Visible = on
+	if not on then
+		clearHighlight()
+	end
+end
+
+local function updateHandHighlight()
+	if not zoomed then
+		return
+	end
+	local result = raycastAhead(18)
+	local part = result and result.Instance
+	local hitHand = part and (part.Name:match("^Finger") or part.Name == "Palm" or part.Parent.Name == "RightHand")
+	if hitHand then
+		local hand = part.Parent
+		if not handHighlight then
+			handHighlight = Instance.new("Highlight")
+			handHighlight.Name = "InspectionHighlight"
+			handHighlight.FillTransparency = 1
+			handHighlight.OutlineColor = Color3.fromRGB(255, 210, 110)
+			handHighlight.OutlineTransparency = 0.1
+			handHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+			handHighlight.Parent = hand
+		end
+	else
+		clearHighlight()
+	end
+end
+
+local function rebuildMirror(force)
+	if not mirrorOpen then
+		return
+	end
+	local result = raycastAhead(20)
+	local aimed = result and isNpcPart(result.Instance)
+	local source = ReplicatedStorage:FindFirstChild("NightConductorReflection")
+	local key = tostring(aimed) .. ":" .. tostring(source ~= nil) .. ":" .. tostring(getNpc())
+	if not force and mirrorBuildKey == key then
+		return
+	end
+	mirrorBuildKey = key
+
+	for _, child in ipairs(mirrorWorld:GetChildren()) do
+		child:Destroy()
+	end
+
+	if not aimed then
+		mirrorHint.Text = "Наведи зеркало на пассажира."
+		mirrorHint.Visible = true
+		return
+	end
+	if source then
+		local clone = source:Clone()
+		clone.Parent = mirrorWorld
+		mirrorHint.Visible = false
+	else
+		mirrorHint.Text = "В зеркале — пусто."
+		mirrorHint.Visible = true
+	end
+end
+
+local function setMirror(on)
+	if mirrorOpen == on then
+		return
+	end
+	mirrorOpen = on
+	mirrorOverlay.Visible = on
+	if on then
+		mirrorBuildKey = nil
+		rebuildMirror(true)
+		setTask("Зеркало поднято. Наведи его на пассажира.")
+	else
+		mirrorHint.Visible = false
+	end
+end
+
+local function stampLabelOnTicket(decision)
+	local ticket = props.Ticket
+	if not ticket then
+		return
+	end
+	local surface = ticket:FindFirstChildOfClass("SurfaceGui")
+	if not surface then
+		return
+	end
+	local old = surface:FindFirstChild("StampMark")
+	if old then
+		old:Destroy()
+	end
+	local mark = new("TextLabel", {
+		Name = "StampMark",
+		Position = UDim2.fromScale(0.38, 0.42),
+		Size = UDim2.fromScale(0.6, 0.3),
+		Rotation = -12,
+		BackgroundTransparency = 1,
+		Text = decision == "admit" and "ПРОПУСТИТЬ" or "ОТКАТАТЬ",
+		TextColor3 = decision == "admit" and Color3.fromRGB(30, 110, 60) or Color3.fromRGB(150, 35, 45),
+		Font = Enum.Font.GothamBlack,
+		TextScaled = true,
+		ZIndex = 2,
+	})
+	mark.Parent = surface
+end
+
+local function tryStamp(decision)
+	if stampBusy or not currentData then
+		return
+	end
+	local result = raycastAhead(14)
+	local part = result and result.Instance
+	local hitDocument = part and (part.Name == "Ticket" or part.Name == "Passport")
+	if not hitDocument or not result or result.Distance > 12 then
+		showToast("Подойди к документам и наведи печать на билет.", "info")
+		return
+	end
+	stampBusy = true
+	stampLabelOnTicket(decision)
+	showToast(decision == "admit" and "Печать: ПРОПУСТИТЬ" or "Печать: ОТКАТАТЬ", "info")
+	Remotes.PhysicalDecide:FireServer(decision)
+end
+
+-- Tools
+local function makeHandle(size, color, material)
+	local handle = new("Part", {
+		Name = "Handle",
+		Size = size,
+		Color = color,
+		Material = material or Enum.Material.SmoothPlastic,
+		CanCollide = false,
+		Massless = true,
+		CastShadow = false,
+		Anchored = false,
+	})
+	return handle
+end
+
+local function newTool(name, handle)
+	local tool = new("Tool", {
+		Name = name,
+		RequiresHandle = true,
+		CanBeDropped = false,
+	})
+	handle.Parent = tool
+	return tool
+end
+
+local function giveTool(kind)
+	if toolsById[kind] then
+		return
+	end
+	local backpack = player:FindFirstChild("Backpack") or player:WaitForChild("Backpack", 5)
+	if not backpack then
+		return
+	end
+
+	local tool
+	if kind == "lamp" then
+		local handle = makeHandle(Vector3.new(0.36, 0.5, 0.36), Color3.fromRGB(150, 120, 60), Enum.Material.Metal)
+		local light = new("PointLight", {
+			Color = Color3.fromRGB(255, 220, 160),
+			Brightness = 2.4,
+			Range = 22,
+			Shadows = false,
+			Enabled = false,
+		})
+		light.Parent = handle
+		tool = newTool("Фонарь", handle)
+		tool.Equipped:Connect(function()
+			light.Enabled = true
+		end)
+		tool.Unequipped:Connect(function()
+			light.Enabled = false
+		end)
+	elseif kind == "mirror" then
+		local handle = makeHandle(Vector3.new(0.5, 0.7, 0.06), Color3.fromRGB(160, 165, 175), Enum.Material.Metal)
+		tool = newTool("Зеркало", handle)
+		tool.Activated:Connect(function()
+			setMirror(not mirrorOpen)
+		end)
+		tool.Unequipped:Connect(function()
+			setMirror(false)
+		end)
+	elseif kind == "magnifier" then
+		local handle = makeHandle(Vector3.new(0.08, 0.4, 0.4), Color3.fromRGB(150, 120, 60), Enum.Material.Metal)
+		handle.Shape = Enum.PartType.Cylinder
+		handle.CFrame = CFrame.Angles(0, 0, math.rad(90))
+		handle.Name = "Handle"
+		tool = newTool("Лупа", handle)
+		tool.Activated:Connect(function()
+			setZoom(not zoomed)
+		end)
+		tool.Unequipped:Connect(function()
+			setZoom(false)
+		end)
+	else
+		local isAdmit = kind == "admit"
+		local handle = makeHandle(Vector3.new(0.26, 0.44, 0.26), isAdmit and Color3.fromRGB(40, 110, 65) or Color3.fromRGB(120, 45, 50), Enum.Material.Metal)
+		tool = newTool(isAdmit and "Печать ПРОПУСТИТЬ" or "Печать ОТКАТАТЬ", handle)
+		tool:SetAttribute("Decision", isAdmit and "admit" or "deny")
+		tool.Activated:Connect(function()
+			tryStamp(tool:GetAttribute("Decision"))
+		end)
+	end
+
+	tool.Parent = backpack
+	toolsById[kind] = tool
+	showToast("Взято: " .. tool.Name, "info")
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid:EquipTool(tool)
+	end
+end
+
+local function clearTools()
+	for kind, tool in pairs(toolsById) do
+		tool:Destroy()
+		toolsById[kind] = nil
+	end
+end
+
+-- Props
+local function hideProp(prop)
+	if hiddenProps[prop] then
+		return
+	end
+	local record = {}
+	if prop:IsA("BasePart") then
+		record[prop] = prop.Transparency
+		prop.Transparency = 1
+	end
+	for _, child in ipairs(prop:GetDescendants()) do
+		if child:IsA("BasePart") then
+			record[child] = child.Transparency
+			child.Transparency = 1
+		elseif child:IsA("SurfaceGui") then
+			record[child] = child.Enabled
+			child.Enabled = false
+		end
+	end
+	hiddenProps[prop] = record
+end
+
+local function restoreProps()
+	for prop, record in pairs(hiddenProps) do
+		for instance, value in pairs(record) do
+			if instance:IsA("SurfaceGui") then
+				instance.Enabled = value
+			else
+				instance.Transparency = value
+			end
+		end
+		local prompt = prop:FindFirstChildOfClass("ProximityPrompt")
+		if prompt then
+			prompt.Enabled = true
+		end
+	end
+	hiddenProps = {}
+	for _, prop in pairs(props) do
+		local prompt = prop:FindFirstChildOfClass("ProximityPrompt")
+		if prompt then
+			prompt.Enabled = true
+		end
+	end
+	for _, entry in ipairs(interactables) do
+		entry.taken = false
+	end
+end
+
+local function addInteractable(prop, actionText, objectText, handler)
+	if not prop then
+		return
+	end
+	local entry = {
+		prop = prop,
+		action = actionText,
+		object = objectText,
+		handler = handler,
+		taken = false,
+	}
+	table.insert(interactables, entry)
+	interactableByProp[prop] = entry
+end
+
+local function setupProps()
+	local world = workspace:WaitForChild("NightConductorPhysicalWorld", 30)
+	if not world then
+		return
+	end
+	local propFolder = world:WaitForChild("Props", 10)
+	if not propFolder then
+		return
+	end
+	props.Lamp = propFolder:FindFirstChild("Lamp")
+	props.Mirror = propFolder:FindFirstChild("Mirror")
+	props.Magnifier = propFolder:FindFirstChild("Magnifier")
+	props.StampAdmit = propFolder:FindFirstChild("StampAdmit")
+	props.StampDeny = propFolder:FindFirstChild("StampDeny")
+	props.Ticket = propFolder:FindFirstChild("Ticket")
+	props.Passport = propFolder:FindFirstChild("Passport")
+
+	local function take(kind, prop)
+		if toolsById[kind] then
+			return
+		end
+		local entry = interactableByProp[prop]
+		if entry then
+			entry.taken = true
+		end
+		hideProp(prop)
+		giveTool(kind)
+	end
+
+	addInteractable(props.Lamp, "Взять", "Фонарь", function()
+		take("lamp", props.Lamp)
+	end)
+	addInteractable(props.Mirror, "Взять", "Зеркало", function()
+		take("mirror", props.Mirror)
+	end)
+	addInteractable(props.Magnifier, "Взять", "Лупа", function()
+		take("magnifier", props.Magnifier)
+	end)
+	addInteractable(props.StampAdmit, "Взять", "Печать «ПРОПУСТИТЬ»", function()
+		take("admit", props.StampAdmit)
+	end)
+	addInteractable(props.StampDeny, "Взять", "Печать «ОТКАТАТЬ»", function()
+		take("deny", props.StampDeny)
+	end)
+	addInteractable(props.Ticket, "Прочитать", "Билет", function()
+		openPaper("ticket")
+	end)
+	addInteractable(props.Passport, "Прочитать", "Паспорт", function()
+		openPaper("passport")
+	end)
+end
+
+local function updateContext()
+	local now = os.clock()
+	if now - lastContextAt < 0.1 then
+		return
+	end
+	lastContextAt = now
+
+	if paperOpen or resultOverlay.Visible or mirrorOpen then
+		contextFrame.Visible = false
+		currentInteractable = nil
+		return
+	end
+
+	local cam = workspace.CurrentCamera
+	if not cam then
+		return
+	end
+	local best = nil
+	local bestScore = -math.huge
+
+	-- Precise selection: whatever the crosshair actually hits.
+	local result = raycastAhead(12)
+	if result then
+		local hit = result.Instance
+		for _, entry in ipairs(interactables) do
+			local prop = entry.prop
+			if not entry.taken and prop and (hit == prop or hit:IsDescendantOf(prop)) then
+				best = entry
+				break
+			end
+		end
+	end
+
+	if not best then
+		for _, entry in ipairs(interactables) do
+			local prop = entry.prop
+			if not entry.taken and prop and prop.Parent then
+				local delta = prop.Position - cam.CFrame.Position
+				local distance = delta.Magnitude
+				if distance <= 7 and distance > 0.05 then
+					local dot = delta.Unit:Dot(cam.CFrame.LookVector)
+					if dot > 0.97 then
+						local score = dot - distance * 0.005
+						if score > bestScore then
+							best = entry
+							bestScore = score
+						end
+					end
+				end
+			end
+		end
+	end
+
+	currentInteractable = best
+	if best then
+		contextLabel.Text = "E — " .. best.action .. ": " .. best.object
+		contextFrame.Visible = true
+	else
+		contextFrame.Visible = false
+	end
+end
+
+-- Documents on the physical props
+local function updateDocuments()
+	if not currentData then
+		return
+	end
+	if props.Ticket then
+		local surface = props.Ticket:FindFirstChildOfClass("SurfaceGui")
+		local label = surface and surface:FindFirstChild("Text")
+		if label then
+			label.Text = "БИЛЕТ № " .. currentData.ticket.number .. "\n" .. currentData.ticket.date .. "\nместо " .. currentData.ticket.seat
+		end
+	end
+	if props.Passport then
+		local surface = props.Passport:FindFirstChildOfClass("SurfaceGui")
+		local label = surface and surface:FindFirstChild("Text")
+		if label then
+			label.Text = "ПАСПОРТ\n" .. currentData.name .. "\n" .. currentData.passport.number
+		end
+	end
+end
+
+local function resetPassengerState()
+	currentData = nil
+	currentNpc = nil
+	currentIndex = 0
+	currentTotal = 0
+	tutorialActive = false
+	stampBusy = false
+	readTicket = false
+	readPassport = false
+	closePaper()
+	setMirror(false)
+	setZoom(false)
+	clearHighlight()
+	clearTools()
+	restoreProps()
+	nameLabel.Text = ""
+	metaLabel.Text = ""
+	progressLabel.Text = ""
+	setTask("ОЖИДАНИЕ ПАССАЖИРА")
+end
+
+local function showPassenger(payload)
+	currentData = payload.data
+	currentIndex = payload.index or 0
+	currentTotal = payload.total or 4
+	tutorialActive = payload.tutorial == true
+	stampBusy = false
+	readTicket = false
+	readPassport = false
+
+	nameLabel.Text = currentData.name
+	metaLabel.Text = "→ " .. currentData.destination .. "  ·  место " .. currentData.seat .. "  ·  " .. (currentData.class == "first" and "Первый класс" or "Второй класс")
+	progressLabel.Text = tostring(currentIndex) .. " / " .. tostring(currentTotal)
+	setTask(payload.hint or "Проверь документы, тень и отражение. Потом поставь печать.")
+
+	currentNpc = nil
+	local folder = workspace:FindFirstChild("NightConductorPhysicalPassengers")
+	if folder then
+		currentNpc = folder:FindFirstChildWhichIsA("Model")
+	end
+
+	updateDocuments()
+	if props.Ticket then
+		local surface = props.Ticket:FindFirstChildOfClass("SurfaceGui")
+		if surface then
+			local old = surface:FindFirstChild("StampMark")
+			if old then
+				old:Destroy()
+			end
+		end
+	end
+end
+
+local function showResult(payload)
+	resultOverlay.Visible = true
+	local stars = payload.stars or 1
+	resultStars.Text = string.rep("★", stars) .. string.rep("☆", math.max(0, 3 - stars))
+	local stats = payload.stats or {}
+	resultStats.Text = table.concat({
+		"Верных решений: " .. tostring(stats.correct or 0) .. " / " .. tostring(stats.total or 4),
+		"Аномалий поймано: " .. tostring(stats.caught or 0),
+		"Ошибок: " .. tostring(stats.mistakes or 0),
+		"Пропущено на посадке: " .. tostring(stats.missed or 0),
+	}, "\n")
+	resultPayout.Text = "+" .. tostring(payload.payout or 0) .. " Искр"
+	resultTitle.Text = (payload.stats and payload.stats.mistakes == 0) and "СМЕНА ВЫДЕРЖАНА" or "СМЕНА ОКОНЧЕНА"
+
+	player.CameraMode = Enum.CameraMode.Classic
+	UserInputService.MouseIconEnabled = true
+	UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+end
+
+restartButton.MouseButton1Click:Connect(function()
+	resultOverlay.Visible = false
+	player.CameraMode = Enum.CameraMode.LockFirstPerson
+	UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+	UserInputService.MouseIconEnabled = false
+	Remotes.PhysicalRestart:FireServer()
+end)
+
+Remotes.PhysicalEvent.OnClientEvent:Connect(function(payload)
+	if payload.type == "reset" then
+		resetPassengerState()
+		player.CameraMode = Enum.CameraMode.LockFirstPerson
+		UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+		UserInputService.MouseIconEnabled = false
+	elseif payload.type == "passenger" then
+		showPassenger(payload)
+	elseif payload.type == "feedback" then
+		local text = payload.text or ""
+		if payload.hint then
+			text = text .. "\nПОДСКАЗКА: " .. payload.hint
+		end
+		showToast(text, payload.kind)
+		if payload.correct then
+			setTask("Верно. Ждём следующего пассажира.")
+		else
+			setTask("Ошибка. Смотри подсказку.")
+		end
+		stampBusy = true
+		task.delay(2, function()
+			stampBusy = false
+		end)
+	elseif payload.type == "result" then
+		showResult(payload)
+	end
+end)
+
+-- Input
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then
+		return
+	end
+	if input.KeyCode == Enum.KeyCode.E or input.KeyCode == Enum.KeyCode.Escape then
+		if paperOpen then
+			if os.clock() - paperOpenedAt > 0.35 then
+				closePaper()
+			end
+			return
+		end
+		if input.KeyCode == Enum.KeyCode.E and currentInteractable then
+			local entry = currentInteractable
+			currentInteractable = nil
+			contextFrame.Visible = false
+			entry.handler()
+		end
+	end
+end)
+
+-- First person
+local function applyFirstPerson()
+	player.CameraMode = Enum.CameraMode.LockFirstPerson
+	UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+	UserInputService.MouseIconEnabled = false
+end
+
+player.CharacterAdded:Connect(function()
+	task.wait(0.3)
+	applyFirstPerson()
+end)
+
+pcall(function()
+	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Health, false)
+	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Chat, false)
+end)
+
+applyFirstPerson()
+setupProps()
+setTask("Ты в тамбуре. Подойди к столу слева и возьми билет.")
+
+RunService.RenderStepped:Connect(function()
+	updateContext()
+	if zoomed then
+		updateHandHighlight()
+	end
+	if mirrorOpen then
+		rebuildMirror()
+	end
+end)
+
+print("[NightConductor] physical client ready")
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  </Item>
+  </Item>
+</roblox>
