@@ -1,0 +1,3285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+  <External>null</External>
+  <External>nil</External>
+  <Item class="Workspace" referent="RBX13">
+    <Properties>
+      <string name="Name">Workspace</string>
+    </Properties>
+  <Item class="Part" referent="RBX1">
+    <Properties>
+      <string name="Name">Baseplate</string>
+      <bool name="Anchored">true</bool>
+      <Vector3 name="size"><X>260</X><Y>2</Y><Z>260</Z></Vector3>
+      <CoordinateFrame name="CFrame">
+        <X>0</X><Y>-1</Y><Z>0</Z>
+        <R00>1</R00><R01>0</R01><R02>0</R02>
+        <R10>0</R10><R11>1</R11><R12>0</R12>
+        <R20>0</R20><R21>0</R21><R22>1</R22>
+      </CoordinateFrame>
+      <Color3uint8 name="Color3uint8">4286611584</Color3uint8>
+      <token name="Material">256</token>
+      <token name="TopSurface">0</token>
+      <token name="BottomSurface">0</token>
+    </Properties>
+  </Item>
+  </Item>
+  <Item class="Lighting" referent="RBX14">
+    <Properties>
+      <string name="Name">Lighting</string>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="RBX15">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+  <Item class="StringValue" referent="RBX5">
+    <Properties>
+      <string name="Name">BUILD_INFO</string>
+      <string name="Value">NIGHT_CONDUCTOR_PROTOTYPE_V7</string>
+    </Properties>
+  </Item>
+  <Item class="Folder" referent="RBX4">
+    <Properties>
+      <string name="Name">Shared</string>
+    </Properties>
+  <Item class="ModuleScript" referent="RBX2">
+    <Properties>
+      <string name="Name">Config</string>
+      <ProtectedString name="Source"><![CDATA[-- NIGHT CONDUCTOR — prototype configuration
+local Config = {}
+
+Config.GameName = "NIGHT CONDUCTOR"
+Config.Version = "0.1-prototype"
+Config.TotalPassengers = 6
+Config.Today = "30.10.2026"
+Config.Rule = "Аномалия может быть в любом канале. Дата — только одна из проверок."
+Config.Checklist = "ПРОВЕРЬ: ДАТА · ИМЯ · ФОТО · ОТРАЖЕНИЕ · ТЕНЬ · РУКИ"
+Config.TutorialIntro = "Ты — ночной кондуктор.\n\n1. Сверь билет и паспорт: имя, дата, место.\n2. Сравни фото: шляпа и глаза.\n3. Проверь отражение (ЗЕРКАЛО) и тень (ЛАМПА).\n4. Аномалия может быть в любом канале.\n\nВсё совпало — ПРОПУСТИТЬ.\nЧто-то не так — ОТКАЗАТЬ."
+Config.Tutorial = {
+	[1] = {
+		text = "УЧЕБНЫЙ ПАССАЖИР. Сверь имя и дату. Всё совпадает? Нажми ПРОПУСТИТЬ.",
+		decision = "admit",
+	},
+	[2] = {
+		text = "ДАТА НЕ СОВПАДАЕТ: 12.04.1912 вместо 30.10.2026. Нажми ОТКАЗАТЬ.",
+		tool = "magnifier",
+		decision = "deny",
+	},
+	[3] = {
+		text = "ДАТА ВЕРНАЯ — ЭТО ЛОВУШКА. Проверь тень: нажми ЛАМПА.",
+		tool = "lamp",
+		decision = "deny",
+	},
+	[4] = {
+		text = "ПРОВЕРЬ ОТРАЖЕНИЕ: нажми ЗЕРКАЛО.",
+		tool = "mirror",
+		decision = "deny",
+	},
+	[5] = {
+		text = "ПРОВЕРЬ РУКИ: нажми ЛУПА или ОСМОТР.",
+		tool = "magnifier",
+		decision = "deny",
+	},
+	[6] = {
+		text = "ТЕПЕРЬ САМ. Проверь билет, фото, отражение и тень.",
+	},
+}
+
+Config.PassengerNames = {
+	"Мира Вельт",
+	"Оскар Пенн",
+	"Лира Нокт",
+	"Сол Вейд",
+	"Ирис Мор",
+	"Тобиас Кроу",
+	"Нэя Свет",
+	"Финн Гарр",
+	"Ада Лун",
+	"Рэй Стоун",
+}
+
+Config.Destinations = {
+	"Станция Свечей",
+	"Станция Зеркал",
+	"Станция Забвения",
+	"Станция Садов",
+	"Последняя станция",
+}
+
+Config.Origins = {
+	"Город Полуночи",
+	"Деревня Фонарей",
+	"Остров Тумана",
+	"Нижние Сады",
+	"Порт Снов",
+}
+
+Config.LuggageContents = {
+	"книга со странными страницами",
+	"банка светлячков",
+	"старый компас",
+	"коробка с чаем",
+	"свёрток с тёплым шарфом",
+	"клетка с механической птицей",
+}
+
+Config.HatColors = {
+	{ name = "красная", color = Color3.fromRGB(180, 60, 60) },
+	{ name = "зелёная", color = Color3.fromRGB(60, 140, 90) },
+	{ name = "синяя", color = Color3.fromRGB(60, 90, 170) },
+	{ name = "жёлтая", color = Color3.fromRGB(210, 180, 60) },
+	{ name = "фиолетовая", color = Color3.fromRGB(120, 70, 160) },
+}
+
+Config.EyeColors = {
+	"зелёные",
+	"серые",
+	"карие",
+	"янтарные",
+	"бледно-голубые",
+}
+
+Config.Anomalies = {
+	wrong_date = {
+		name = "Билет из прошлого",
+		tier = 1,
+		tool = "magnifier",
+		hint = "Дата на билете не совпадает с сегодняшним днём.",
+	},
+	wrong_shadow = {
+		name = "Тень не там",
+		tier = 1,
+		tool = "lamp",
+		hint = "Тень падает в сторону лампы, а не от неё.",
+	},
+	no_reflection = {
+		name = "Без отражения",
+		tier = 1,
+		tool = "mirror",
+		hint = "В зеркале пассажир не отражается.",
+	},
+	six_fingers = {
+		name = "Лишний палец",
+		tier = 1,
+		tool = "magnifier",
+		hint = "На правой руке шесть пальцев.",
+	},
+	photo_mismatch = {
+		name = "Чужое фото",
+		tier = 1,
+		tool = "look",
+		hint = "Шляпа на фото не совпадает с той, что на пассажире.",
+	},
+}
+
+Config.Questions = {
+	{ id = "destination", text = "Куда вы едете?" },
+	{ id = "luggage", text = "Что у вас в багаже?" },
+	{ id = "name", text = "Как вас зовут?" },
+}
+
+Config.TunnelChoices = {
+	{ id = "expose", text = "РАЗОБЛАЧИТЬ (зеркало)" },
+	{ id = "contain", text = "ИЗОЛИРОВАТЬ ВАГОН" },
+	{ id = "brake", text = "СТОП-КРАН" },
+	{ id = "hide", text = "СПРЯТАТЬСЯ" },
+}
+
+return Config
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX3">
+    <Properties>
+      <string name="Name">Remotes</string>
+      <ProtectedString name="Source"><![CDATA[-- Shared remotes. The server creates them; the client waits for replication.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local folder
+if RunService:IsServer() then
+	folder = ReplicatedStorage:FindFirstChild("NightConductorRemotes")
+	if not folder then
+		folder = Instance.new("Folder")
+		folder.Name = "NightConductorRemotes"
+		folder.Parent = ReplicatedStorage
+	end
+else
+	folder = ReplicatedStorage:WaitForChild("NightConductorRemotes")
+end
+
+local function get(className, name)
+	local item = folder:FindFirstChild(name)
+	if not item then
+		item = Instance.new(className)
+		item.Name = name
+		item.Parent = folder
+	end
+	return item
+end
+
+return {
+	Inspect = get("RemoteFunction", "Inspect"),
+	Ask = get("RemoteFunction", "Ask"),
+	Decide = get("RemoteEvent", "Decide"),
+	TunnelChoice = get("RemoteEvent", "TunnelChoice"),
+	Restart = get("RemoteEvent", "Restart"),
+	GameEvent = get("RemoteEvent", "GameEvent"),
+}
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  </Item>
+  </Item>
+  <Item class="ServerScriptService" referent="RBX16">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+  <Item class="Folder" referent="RBX10">
+    <Properties>
+      <string name="Name">Server</string>
+    </Properties>
+  <Item class="Script" referent="RBX6">
+    <Properties>
+      <string name="Name">Bootstrap</string>
+      <ProtectedString name="Source"><![CDATA[local GameService = require(script.Parent:WaitForChild("GameService"))
+
+print("[NightConductor] Bootstrap v7 loaded")
+GameService.init()
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX7">
+    <Properties>
+      <string name="Name">GameService</string>
+      <ProtectedString name="Source"><![CDATA[-- Server-authoritative prototype flow: 6 passengers -> tunnel -> results.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Remotes = require(Shared:WaitForChild("Remotes"))
+local PassengerFactory = require(script.Parent:WaitForChild("PassengerFactory"))
+local WorldBuilder = require(script.Parent:WaitForChild("WorldBuilder"))
+
+local GameService = {}
+
+local activePlayer = nil
+local shiftRunning = false
+local currentPassenger = nil
+local currentModel = nil
+local locked = false
+local held = false
+local pendingDecision = nil
+local tunnelChoice = nil
+local tunnelOpen = false
+local shiftTools = {}
+local toolUses = {}
+local runCounts = {}
+
+local decisionSignal = Instance.new("BindableEvent")
+local tunnelSignal = Instance.new("BindableEvent")
+
+local validTunnelChoices = {}
+for _, choice in ipairs(Config.TunnelChoices) do
+	validTunnelChoices[choice.id] = true
+end
+
+local function send(player, payload)
+	if player and player.Parent then
+		Remotes.GameEvent:FireClient(player, payload)
+	end
+end
+
+local function anomalyName(data)
+	if data and data.isAnomaly and data.anomalyId and Config.Anomalies[data.anomalyId] then
+		return Config.Anomalies[data.anomalyId].name
+	end
+	return nil
+end
+
+local function waitForDecision(timeout)
+	local done = false
+	local connection = decisionSignal.Event:Connect(function()
+		done = true
+	end)
+
+	local started = os.clock()
+	while not done and os.clock() - started < timeout do
+		if not activePlayer or not activePlayer.Parent then
+			break
+		end
+		task.wait(0.1)
+	end
+
+	connection:Disconnect()
+	return done
+end
+
+local function waitForTunnel(timeout)
+	local done = false
+	local connection = tunnelSignal.Event:Connect(function()
+		done = true
+	end)
+
+	local started = os.clock()
+	while not done and os.clock() - started < timeout do
+		if not activePlayer or not activePlayer.Parent then
+			break
+		end
+		task.wait(0.1)
+	end
+
+	connection:Disconnect()
+	return done
+end
+
+local function evaluateDecision(data, decision, stats)
+	local correct = false
+	local message
+
+	if decision == "admit" then
+		if data.isAnomaly then
+			stats.anomaliesOnBoard = stats.anomaliesOnBoard + 1
+			stats.mistakes = stats.mistakes + 1
+			message = "Аномалия села в поезд. Она уже в вагоне."
+		else
+			stats.correct = stats.correct + 1
+			correct = true
+			message = "Пассажир сел. Пока всё спокойно."
+		end
+	elseif decision == "deny" then
+		if data.isAnomaly then
+			stats.caught = stats.caught + 1
+			stats.correct = stats.correct + 1
+			correct = true
+			message = "Верно. Пассажир растворился в тени."
+		else
+			stats.mistakes = stats.mistakes + 1
+			message = "Вы отказали невиновному. Он ушёл с обидой."
+		end
+	end
+
+	return correct, message
+end
+
+local function runTunnel(player, stats)
+	if stats.anomaliesOnBoard > 0 then
+		tunnelChoice = nil
+		tunnelOpen = true
+		send(player, {
+			type = "tunnel",
+			title = "ЧЁРНАЯ МИЛЯ",
+			text = "Аномалия на борту. Свет гаснет. У тебя 12 секунд, чтобы выбрать действие.",
+			choices = Config.TunnelChoices,
+		})
+
+		waitForTunnel(14)
+		tunnelOpen = false
+
+		local choice = tunnelChoice or "hide"
+		if not validTunnelChoices[choice] then
+			choice = "hide"
+		end
+
+		local chances = {
+			expose = 0.55,
+			contain = 0.6,
+			brake = 0.5,
+			hide = 0.3,
+		}
+		if choice == "expose" and shiftTools.mirror then
+			chances.expose = chances.expose + 0.2
+		end
+
+		local success = math.random() < chances[choice]
+		local text
+		if success then
+			stats.caught = stats.caught + stats.anomaliesOnBoard
+			if choice == "expose" then
+				text = "Зеркало вспыхнуло. Аномалия закричала и рассыпалась. Поезд вышел из тоннеля."
+			elseif choice == "contain" then
+				text = "Вы заперли вагон. Что-то стучало всю дорогу, но поезд цел."
+			elseif choice == "brake" then
+				text = "Стоп-кран завизжал. Поезд встал в тоннеле. Аномалия не успела."
+			else
+				text = "Вы переждали в тамбуре. Аномалия прошла мимо."
+			end
+		else
+			stats.mistakes = stats.mistakes + 1
+			text = "Аномалия добралась до Сердца. Поезд потерял вагон. Смена окончена."
+		end
+
+		send(player, {
+			type = "tunnelResult",
+			success = success,
+			text = text,
+			choice = choice,
+		})
+		task.wait(3.2)
+		return success
+	end
+
+	send(player, {
+		type = "quiet",
+		title = "ТИХАЯ МИЛЯ",
+		text = "Аномалий нет. Поезд проходит станцию, которой нет на карте. Кот смотрит в окно.",
+	})
+	task.wait(3)
+	return true
+end
+
+local function runShift(player)
+	WorldBuilder.build()
+	shiftTools = {}
+
+	local character = player.Character or player.CharacterAdded:Wait()
+	task.wait(0.3)
+	character:PivotTo(WorldBuilder.spawnCFrame)
+
+	send(player, { type = "reset" })
+
+	local runNumber = (runCounts[player] or 0) + 1
+	runCounts[player] = runNumber
+	local seed = runNumber == 1 and 1 or math.random(2, 1000000000)
+	local plan = PassengerFactory.buildPlan(seed)
+
+	local stats = {
+		correct = 0,
+		mistakes = 0,
+		caught = 0,
+		anomaliesOnBoard = 0,
+		total = Config.TotalPassengers,
+	}
+
+	for index = 1, Config.TotalPassengers do
+		if not player.Parent then
+			return
+		end
+
+		local data = PassengerFactory.create(index, seed, plan[index])
+		local model = WorldBuilder.spawnPassenger(data)
+		currentPassenger = data
+		currentModel = model
+		locked = false
+		held = false
+		pendingDecision = nil
+		toolUses = {}
+
+		send(player, {
+			type = "progress",
+			index = index,
+			total = Config.TotalPassengers,
+		})
+		task.wait(0.25)
+
+		WorldBuilder.movePassenger(model, WorldBuilder.boothCFrame, 1.1)
+		local publicData = PassengerFactory.publicData(data)
+		if runNumber == 1 then
+			local tutorial = Config.Tutorial[index]
+			if tutorial then
+				publicData.tutorial = {
+					index = index,
+					text = tutorial.text,
+					tool = tutorial.tool,
+					decision = tutorial.decision,
+				}
+			end
+		end
+		send(player, {
+			type = "passenger",
+			data = publicData,
+		})
+
+		local gotDecision = waitForDecision(60)
+		if not gotDecision then
+			if currentModel then
+				WorldBuilder.removePassenger(currentModel)
+			end
+			send(player, {
+				type = "result",
+				stars = 1,
+				payout = 0,
+				tunnelSuccess = false,
+				stats = {
+					correct = stats.correct,
+					mistakes = stats.mistakes,
+					caught = stats.caught,
+					missed = stats.anomaliesOnBoard,
+					total = stats.total,
+				},
+			})
+			return
+		end
+
+		local decision = pendingDecision
+		pendingDecision = nil
+		if decision ~= "admit" and decision ~= "deny" then
+			decision = "deny"
+		end
+
+		local correct, message = evaluateDecision(data, decision, stats)
+		local name = anomalyName(data)
+		local hint = data.isAnomaly and data.anomalyId and Config.Anomalies[data.anomalyId] and Config.Anomalies[data.anomalyId].hint or nil
+		if not correct and not data.isAnomaly then
+			hint = "Все документы и фото совпадали. Невиновных нужно пропускать."
+		end
+
+		send(player, {
+			type = "feedback",
+			kind = correct and "good" or "bad",
+			text = message,
+			anomalyName = name,
+			hint = hint,
+			correct = correct,
+		})
+
+		if decision == "admit" then
+			WorldBuilder.movePassenger(model, WorldBuilder.trainDoorCFrame, 1.0)
+			task.wait(0.9)
+		else
+			WorldBuilder.movePassenger(model, WorldBuilder.exitCFrame, 1.0)
+			task.wait(0.9)
+		end
+
+		WorldBuilder.removePassenger(model)
+		currentPassenger = nil
+		currentModel = nil
+		locked = false
+		held = false
+		task.wait(0.9)
+	end
+
+	local tunnelSuccess = runTunnel(player, stats)
+	if not player.Parent then
+		return
+	end
+
+	local stars = 1
+	if stats.mistakes == 0 then
+		stars = 3
+	elseif stats.mistakes <= 2 then
+		stars = 2
+	end
+	if stats.anomaliesOnBoard > 0 and not tunnelSuccess then
+		stars = math.min(stars, 1)
+	end
+
+	local payout = 100 + stats.correct * 25 + stats.caught * 50 + (tunnelSuccess and 150 or 0) - stats.mistakes * 15
+	payout = math.max(0, payout)
+
+	send(player, {
+		type = "result",
+		stars = stars,
+		payout = payout,
+		stats = {
+			correct = stats.correct,
+			mistakes = stats.mistakes,
+			caught = stats.caught,
+			missed = stats.anomaliesOnBoard,
+			total = stats.total,
+		},
+		tunnelSuccess = tunnelSuccess,
+	})
+end
+
+local function startShift(player)
+	if shiftRunning or not player or not player.Parent then
+		return
+	end
+
+	shiftRunning = true
+	activePlayer = player
+
+	task.spawn(function()
+		local ok, err = pcall(runShift, player)
+		if not ok then
+			warn("[NightConductor] " .. tostring(err))
+		end
+		shiftRunning = false
+	end)
+end
+
+function GameService.init()
+	WorldBuilder.build()
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		task.spawn(function()
+			task.wait(1)
+			startShift(player)
+		end)
+	end
+
+	Players.PlayerAdded:Connect(function(player)
+		task.spawn(function()
+			task.wait(2)
+			startShift(player)
+		end)
+	end)
+
+	Players.PlayerRemoving:Connect(function(player)
+		runCounts[player] = nil
+		if activePlayer == player then
+			activePlayer = nil
+			currentPassenger = nil
+			currentModel = nil
+			locked = true
+			tunnelOpen = false
+		end
+
+		task.delay(1.5, function()
+			if not shiftRunning then
+				local nextPlayer = Players:GetPlayers()[1]
+				if nextPlayer then
+					startShift(nextPlayer)
+				end
+			end
+		end)
+	end)
+
+	Remotes.Inspect.OnServerInvoke = function(player, toolId)
+		if player ~= activePlayer or not currentPassenger or locked then
+			return { ok = false, text = "Сейчас нельзя." }
+		end
+		if type(toolId) ~= "string" then
+			return { ok = false, text = "Неизвестный инструмент." }
+		end
+
+		local limits = {
+			mirror = 2,
+			lamp = 2,
+			magnifier = 2,
+			look = 2,
+			compass = 1,
+			cat = 1,
+		}
+		local used = (toolUses[toolId] or 0) + 1
+		if used > (limits[toolId] or 2) then
+			return { ok = false, text = "Инструмент уже дал всё, что мог. Попробуй другой." }
+		end
+		toolUses[toolId] = used
+
+		shiftTools[toolId] = true
+		local data = currentPassenger
+
+		if toolId == "mirror" then
+			if data.noReflection then
+				return { ok = true, text = "В зеркале на месте пассажира — пусто. Только стена." }
+			end
+			return { ok = true, text = "Отражение совпадает. Пассажир выглядит обычно." }
+		elseif toolId == "lamp" then
+			if data.shadowWrong then
+				return { ok = true, text = "Тень падает в сторону лампы, а не от неё. Это неправильно." }
+			end
+			return { ok = true, text = "Тень на месте, пламя ровное. Холода нет." }
+		elseif toolId == "magnifier" then
+			if data.ticket.date ~= Config.Today then
+				return { ok = true, text = "Дата на билете: " .. data.ticket.date .. ". Сегодня " .. Config.Today .. ". Это несоответствие." }
+			end
+			if data.extraFinger then
+				return { ok = true, text = "На правой руке шесть пальцев. Перчатка не скрывает лишний." }
+			end
+			if data.passport.photoHatName ~= data.appearance.hatName then
+				return { ok = true, text = "На фото — " .. data.passport.photoHatName .. " шляпа. На пассажире — " .. data.appearance.hatName .. "." }
+			end
+			return { ok = true, text = "Печать, дата и подпись выглядят обычно." }
+		elseif toolId == "compass" then
+			if data.isAnomaly then
+				return { ok = true, text = "Стрелка дёргается и крутится. Рядом аномалия." }
+			end
+			return { ok = true, text = "Стрелка спокойна." }
+		elseif toolId == "cat" then
+			if data.isAnomaly then
+				return { ok = true, text = "Кот шипит и прячется за стойку." }
+			end
+			return { ok = true, text = "Кот мурчит и трётся о ногу." }
+		elseif toolId == "look" then
+			return { ok = true, text = "На пассажире " .. data.appearance.hatName .. " шляпа. Глаза " .. data.appearance.eyeColor .. ". Он выглядит спокойным." }
+		end
+
+		return { ok = false, text = "Инструмент не отвечает." }
+	end
+
+	Remotes.Ask.OnServerInvoke = function(player, questionId)
+		if player ~= activePlayer or not currentPassenger or locked then
+			return { ok = false, text = "Сейчас нельзя." }
+		end
+
+		local answer = currentPassenger.answers[questionId]
+		if answer then
+			return { ok = true, text = answer }
+		end
+		return { ok = false, text = "Пассажир не понял вопрос." }
+	end
+
+	Remotes.Decide.OnServerEvent:Connect(function(player, decision)
+		if player ~= activePlayer or not currentPassenger or locked then
+			return
+		end
+
+		if decision == "hold" then
+			if held then
+				send(player, { type = "feedback", kind = "info", text = "Пассажир уже задержан. Проверьте документы ещё раз." })
+			else
+				held = true
+				send(player, { type = "feedback", kind = "info", text = "Пассажир ждёт в стороне. Можно использовать инструменты ещё раз." })
+			end
+			return
+		end
+
+		if decision ~= "admit" and decision ~= "deny" then
+			return
+		end
+
+		locked = true
+		pendingDecision = decision
+		decisionSignal:Fire()
+	end)
+
+	Remotes.TunnelChoice.OnServerEvent:Connect(function(player, choice)
+		if player ~= activePlayer or not tunnelOpen or tunnelChoice ~= nil then
+			return
+		end
+		if not validTunnelChoices[choice] then
+			return
+		end
+		tunnelChoice = choice
+		tunnelSignal:Fire()
+	end)
+
+	Remotes.Restart.OnServerEvent:Connect(function(player)
+		if player ~= activePlayer then
+			return
+		end
+
+		task.spawn(function()
+			local started = os.clock()
+			while shiftRunning and os.clock() - started < 3 do
+				task.wait(0.1)
+			end
+			if player == activePlayer and not shiftRunning then
+				startShift(player)
+			end
+		end)
+	end)
+end
+
+return GameService
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX8">
+    <Properties>
+      <string name="Name">PassengerFactory</string>
+      <ProtectedString name="Source"><![CDATA[-- Creates deterministic passenger cases for the prototype.
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+
+local PassengerFactory = {}
+
+local function pick(rng, list)
+	return list[rng:NextInteger(1, #list)]
+end
+
+local function makeTicketNumber(rng)
+	return tostring(rng:NextInteger(10000, 99999))
+end
+
+local function makePassportNumber(rng)
+	return "NC-" .. tostring(rng:NextInteger(1000, 9999))
+end
+
+local function makeColor(rng)
+	return Color3.fromRGB(rng:NextInteger(35, 220), rng:NextInteger(35, 220), rng:NextInteger(35, 220))
+end
+
+local function cloneTable(value)
+	if type(value) ~= "table" then
+		return value
+	end
+	local result = {}
+	for key, child in pairs(value) do
+		result[key] = cloneTable(child)
+	end
+	return result
+end
+
+-- The first shift is scripted so the player learns each tool once.
+-- Later shifts get 2-3 random anomalies.
+function PassengerFactory.buildPlan(seed)
+	if seed == 1 then
+		return {
+			[1] = nil,
+			[2] = "wrong_date",
+			[3] = "wrong_shadow",
+			[4] = "no_reflection",
+			[5] = "six_fingers",
+			[6] = nil,
+		}
+	end
+
+	local rng = Random.new(seed)
+	local anomalyIds = { "wrong_date", "wrong_shadow", "no_reflection", "six_fingers", "photo_mismatch" }
+	for index = #anomalyIds, 2, -1 do
+		local swap = rng:NextInteger(1, index)
+		anomalyIds[index], anomalyIds[swap] = anomalyIds[swap], anomalyIds[index]
+	end
+
+	local indices = { 1, 2, 3, 4, 5, 6 }
+	for index = #indices, 2, -1 do
+		local swap = rng:NextInteger(1, index)
+		indices[index], indices[swap] = indices[swap], indices[index]
+	end
+
+	local count = rng:NextInteger(2, 3)
+	local plan = {}
+	for index = 1, count do
+		plan[indices[index]] = anomalyIds[index]
+	end
+	return plan
+end
+
+function PassengerFactory.create(index, seed, anomalyId)
+	local rng = Random.new(seed + index * 7919)
+	local name = pick(rng, Config.PassengerNames)
+	local destination = pick(rng, Config.Destinations)
+	local origin = pick(rng, Config.Origins)
+	local contents = pick(rng, Config.LuggageContents)
+	local hat = pick(rng, Config.HatColors)
+	local eyeColor = pick(rng, Config.EyeColors)
+	local seat = tostring(index + 2) .. (index % 2 == 0 and "A" or "B")
+	local class = index % 3 == 0 and "first" or "second"
+	local ticketNumber = makeTicketNumber(rng)
+	local passportNumber = makePassportNumber(rng)
+	local price = rng:NextInteger(12, 48)
+
+	local data = {
+		id = "P" .. tostring(index),
+		name = name,
+		age = rng:NextInteger(18, 67),
+		species = "human",
+		seat = seat,
+		class = class,
+		destination = destination,
+		rule = Config.Rule,
+		isAnomaly = false,
+		anomalyId = nil,
+		extraFinger = false,
+		noReflection = false,
+		shadowWrong = false,
+		appearance = {
+			shirtColor = makeColor(rng),
+			pantsColor = makeColor(rng),
+			skinColor = Color3.fromRGB(rng:NextInteger(120, 220), rng:NextInteger(90, 180), rng:NextInteger(70, 150)),
+			hatColor = hat.color,
+			hatName = hat.name,
+			eyeColor = eyeColor,
+		},
+		ticket = {
+			number = ticketNumber,
+			from = "Станция 0",
+			to = destination,
+			date = Config.Today,
+			seat = seat,
+			class = class,
+			price = price,
+			stamp = "LIVE",
+		},
+		passport = {
+			number = passportNumber,
+			origin = origin,
+			seal = "СОЛОВЕЙ",
+			photoHatName = hat.name,
+			eyeColor = eyeColor,
+		},
+		luggage = {
+			tag = "T-" .. ticketNumber,
+			weight = rng:NextInteger(4, 24),
+			contents = contents,
+		},
+		answers = {
+			destination = "На " .. destination .. ".",
+			luggage = "Там " .. contents .. ".",
+			name = "Меня зовут " .. name .. ".",
+		},
+	}
+
+	if anomalyId == "wrong_date" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.ticket.date = "12.04.1912"
+		data.ticket.stamp = "ARCHIVE"
+		data.answers.destination = "В 1912-й. Там меня ждут."
+	elseif anomalyId == "no_reflection" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.noReflection = true
+		data.answers.name = "Я... не помню."
+	elseif anomalyId == "wrong_shadow" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.shadowWrong = true
+	elseif anomalyId == "six_fingers" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		data.extraFinger = true
+		data.answers.luggage = "Перчатки. Одна пара."
+	elseif anomalyId == "photo_mismatch" then
+		data.isAnomaly = true
+		data.anomalyId = anomalyId
+		local otherHat = pick(rng, Config.HatColors)
+		while otherHat.name == hat.name do
+			otherHat = pick(rng, Config.HatColors)
+		end
+		data.passport.photoHatName = otherHat.name
+	end
+
+	return data
+end
+
+function PassengerFactory.publicData(data)
+	return {
+		id = data.id,
+		name = data.name,
+		age = data.age,
+		species = data.species,
+		seat = data.seat,
+		class = data.class,
+		destination = data.destination,
+		rule = data.rule,
+		ticket = cloneTable(data.ticket),
+		passport = cloneTable(data.passport),
+		luggage = cloneTable(data.luggage),
+		appearance = cloneTable(data.appearance),
+	}
+end
+
+return PassengerFactory
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  <Item class="ModuleScript" referent="RBX9">
+    <Properties>
+      <string name="Name">WorldBuilder</string>
+      <ProtectedString name="Source"><![CDATA[-- Builds the prototype station, train, booth and passenger models from primitives.
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
+
+local WorldBuilder = {}
+
+local WORLD_NAME = "NightConductorWorld"
+local PASSENGER_FOLDER = "NightConductorPassengers"
+
+WorldBuilder.spawnCFrame = CFrame.lookAt(Vector3.new(-8, 3, -18), Vector3.new(-8, 3, -12))
+WorldBuilder.boothCFrame = CFrame.lookAt(Vector3.new(-8, 4, -12), Vector3.new(-8, 4, -18))
+WorldBuilder.trainDoorCFrame = CFrame.lookAt(Vector3.new(-8, 4, -4.8), Vector3.new(-8, 4, 0))
+WorldBuilder.exitCFrame = CFrame.lookAt(Vector3.new(20, 4, -18), Vector3.new(30, 4, -18))
+WorldBuilder.startCFrame = CFrame.lookAt(Vector3.new(20, 4, -12), Vector3.new(-8, 4, -12))
+
+local function part(parent, name, size, cframe, color, material, transparency, canCollide)
+	local p = Instance.new("Part")
+	p.Name = name
+	p.Size = size
+	p.CFrame = cframe
+	p.Anchored = true
+	p.CanCollide = canCollide ~= false
+	p.Color = color or Color3.fromRGB(180, 180, 180)
+	p.Material = material or Enum.Material.SmoothPlastic
+	p.Transparency = transparency or 0
+	p.TopSurface = Enum.SurfaceType.Smooth
+	p.BottomSurface = Enum.SurfaceType.Smooth
+	p.Parent = parent
+	return p
+end
+
+local function cylinder(parent, name, size, cframe, color, material)
+	local p = part(parent, name, size, cframe, color, material or Enum.Material.Metal, 0, false)
+	p.Shape = Enum.PartType.Cylinder
+	return p
+end
+
+local function addPointLight(parent, color, brightness, range)
+	local light = Instance.new("PointLight")
+	light.Color = color
+	light.Brightness = brightness
+	light.Range = range
+	light.Shadows = false
+	light.Parent = parent
+	return light
+end
+
+local function billboard(parent, text, offset, size)
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "Label"
+	gui.Size = size or UDim2.fromOffset(360, 100)
+	gui.StudsOffset = offset or Vector3.new(0, 2.5, 0)
+	gui.AlwaysOnTop = true
+	gui.LightInfluence = 0
+	gui.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(255, 220, 150)
+	label.TextStrokeTransparency = 0.6
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBold
+	label.Parent = gui
+	return gui
+end
+
+local function buildLighting()
+	Lighting.ClockTime = 0
+	Lighting.Brightness = 1.4
+	Lighting.Ambient = Color3.fromRGB(18, 22, 34)
+	Lighting.OutdoorAmbient = Color3.fromRGB(25, 32, 50)
+	Lighting.FogEnd = 220
+	Lighting.FogColor = Color3.fromRGB(10, 12, 22)
+	Lighting.EnvironmentDiffuseScale = 0.45
+	Lighting.EnvironmentSpecularScale = 0.2
+
+	for _, child in ipairs(Lighting:GetChildren()) do
+		if child.Name == "PrototypeAtmosphere" or child.Name == "PrototypeBloom" or child.Name == "PrototypeColor" then
+			child:Destroy()
+		end
+	end
+
+	local atmosphere = Instance.new("Atmosphere")
+	atmosphere.Name = "PrototypeAtmosphere"
+	atmosphere.Density = 0.38
+	atmosphere.Haze = 2
+	atmosphere.Glare = 0.15
+	atmosphere.Color = Color3.fromRGB(120, 145, 190)
+	atmosphere.Decay = Color3.fromRGB(70, 80, 120)
+	atmosphere.Parent = Lighting
+
+	local bloom = Instance.new("BloomEffect")
+	bloom.Name = "PrototypeBloom"
+	bloom.Intensity = 0.45
+	bloom.Size = 24
+	bloom.Threshold = 0.9
+	bloom.Parent = Lighting
+
+	local color = Instance.new("ColorCorrectionEffect")
+	color.Name = "PrototypeColor"
+	color.TintColor = Color3.fromRGB(230, 238, 255)
+	color.Contrast = 0.05
+	color.Saturation = -0.08
+	color.Parent = Lighting
+end
+
+local function buildTrain(world)
+	local body = part(world, "TrainFloor", Vector3.new(60, 0.5, 14), CFrame.new(0, 1.25, 4), Color3.fromRGB(70, 45, 30), Enum.Material.WoodPlanks)
+	body.CanCollide = true
+
+	part(world, "TrainLeftWallA", Vector3.new(18, 6, 0.4), CFrame.new(-21, 4, -3), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainLeftWallB", Vector3.new(34, 6, 0.4), CFrame.new(13, 4, -3), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainRightWall", Vector3.new(60, 6, 0.4), CFrame.new(0, 4, 11), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainEndA", Vector3.new(0.4, 6, 14), CFrame.new(-30, 4, 4), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainEndB", Vector3.new(0.4, 6, 14), CFrame.new(30, 4, 4), Color3.fromRGB(25, 70, 52), Enum.Material.Wood)
+	part(world, "TrainRoof", Vector3.new(60, 0.5, 14), CFrame.new(0, 7.25, 4), Color3.fromRGB(18, 48, 38), Enum.Material.Wood)
+
+	for index = 1, 5 do
+		local x = -24 + (index - 1) * 12
+		part(world, "Window" .. index, Vector3.new(7, 3, 0.2), CFrame.new(x, 4.4, -3.24), Color3.fromRGB(130, 180, 210), Enum.Material.Glass, 0.55, false)
+	end
+
+	for _, x in ipairs({ -24, -12, 0, 12, 24 }) do
+		for _, z in ipairs({ -2.8, 10.8 }) do
+			cylinder(world, "Wheel", Vector3.new(0.8, 2.2, 2.2), CFrame.new(x, 1, z) * CFrame.Angles(0, math.rad(90), 0), Color3.fromRGB(30, 30, 30))
+		end
+	end
+
+	part(world, "BrassTrimTop", Vector3.new(60, 0.2, 0.25), CFrame.new(0, 6.8, -3.2), Color3.fromRGB(190, 150, 70), Enum.Material.Metal)
+	part(world, "BrassTrimBottom", Vector3.new(60, 0.2, 0.25), CFrame.new(0, 1.2, -3.2), Color3.fromRGB(190, 150, 70), Enum.Material.Metal)
+
+	local door = part(world, "TrainDoor", Vector3.new(8, 5.5, 0.3), CFrame.new(-8, 3.75, -3.2), Color3.fromRGB(190, 150, 70), Enum.Material.Metal)
+	door.Transparency = 0.35
+	part(world, "TrainStep", Vector3.new(8, 0.5, 3), CFrame.new(-8, 0.55, -4.8), Color3.fromRGB(80, 60, 40), Enum.Material.Wood)
+
+	local chimney = cylinder(world, "Chimney", Vector3.new(1.4, 2.8, 1.4), CFrame.new(-26, 9, 4) * CFrame.Angles(0, 0, math.rad(90)), Color3.fromRGB(40, 40, 45))
+	chimney.CanCollide = false
+
+	local headlight = part(world, "Headlight", Vector3.new(1.2, 1.2, 0.4), CFrame.new(-31, 5, 4), Color3.fromRGB(255, 220, 140), Enum.Material.Neon)
+	addPointLight(headlight, Color3.fromRGB(255, 210, 130), 2, 30)
+
+	for index = 1, 5 do
+		local x = -22 + (index - 1) * 10
+		part(world, "Seat" .. index, Vector3.new(7, 0.5, 2.5), CFrame.new(x, 2.1, 9.5), Color3.fromRGB(110, 35, 45), Enum.Material.Fabric)
+		part(world, "SeatBack" .. index, Vector3.new(7, 3, 0.4), CFrame.new(x, 3.5, 10.7), Color3.fromRGB(90, 25, 35), Enum.Material.Fabric)
+	end
+
+	for _, x in ipairs({ -20, 0, 20 }) do
+		local lamp = part(world, "TrainLamp", Vector3.new(1, 0.25, 1), CFrame.new(x, 6.95, 4), Color3.fromRGB(255, 210, 140), Enum.Material.Neon)
+		addPointLight(lamp, Color3.fromRGB(255, 190, 110), 1.2, 18)
+	end
+end
+
+local function buildStation(world)
+	part(world, "Platform", Vector3.new(90, 1, 26), CFrame.new(0, 0.5, -14), Color3.fromRGB(90, 85, 80), Enum.Material.Concrete)
+	part(world, "SafetyLine", Vector3.new(90, 0.08, 0.5), CFrame.new(0, 1.05, -1.6), Color3.fromRGB(230, 190, 70), Enum.Material.Neon, 0, false)
+
+	for _, x in ipairs({ -30, 30 }) do
+		local pole = part(world, "LampPole", Vector3.new(0.5, 7, 0.5), CFrame.new(x, 4, -12), Color3.fromRGB(35, 35, 40), Enum.Material.Metal)
+		pole.CanCollide = false
+		local lamp = part(world, "PlatformLamp", Vector3.new(1.4, 1.4, 1.4), CFrame.new(x, 7.6, -12), Color3.fromRGB(255, 210, 140), Enum.Material.Neon)
+		lamp.CanCollide = false
+		addPointLight(lamp, Color3.fromRGB(255, 190, 110), 2.2, 26)
+	end
+
+	local canopy = part(world, "Canopy", Vector3.new(44, 0.5, 16), CFrame.new(-4, 10, -18), Color3.fromRGB(30, 45, 40), Enum.Material.Metal)
+	canopy.CanCollide = false
+	for _, x in ipairs({ -24, 16 }) do
+		for _, z in ipairs({ -24, -10.5 }) do
+			part(world, "CanopyPillar", Vector3.new(0.5, 9, 0.5), CFrame.new(x, 5.2, z), Color3.fromRGB(40, 40, 45), Enum.Material.Metal)
+		end
+	end
+
+	local signPart = part(world, "StationSign", Vector3.new(14, 3, 0.5), CFrame.new(0, 8, -24), Color3.fromRGB(30, 40, 35), Enum.Material.Wood)
+	signPart.CanCollide = false
+	billboard(signPart, "STATION 0\nLAST LIGHT", Vector3.new(0, 0, 0), UDim2.fromOffset(520, 130))
+
+	local boothSign = part(world, "BoothSign", Vector3.new(5, 1.2, 0.3), CFrame.new(-8, 5.9, -15), Color3.fromRGB(30, 40, 35), Enum.Material.Wood)
+	boothSign.CanCollide = false
+	billboard(boothSign, "CONDUCTOR", Vector3.new(0, 0, 0), UDim2.fromOffset(300, 70))
+
+	local desk = part(world, "Desk", Vector3.new(7, 1.3, 2.6), CFrame.new(-8, 1.15, -15), Color3.fromRGB(80, 52, 32), Enum.Material.Wood)
+	desk.CanCollide = true
+	part(world, "DeskTop", Vector3.new(7.2, 0.2, 2.8), CFrame.new(-8, 1.9, -15), Color3.fromRGB(110, 75, 45), Enum.Material.Wood)
+	part(world, "TicketTray", Vector3.new(2.2, 0.15, 1.2), CFrame.new(-8.8, 2.05, -14.9), Color3.fromRGB(180, 140, 60), Enum.Material.Metal)
+	part(world, "Stamp", Vector3.new(0.6, 1, 0.6), CFrame.new(-6.4, 2.3, -14.9), Color3.fromRGB(120, 30, 30), Enum.Material.Metal)
+
+	local mirrorFrame = part(world, "MirrorFrame", Vector3.new(2.2, 2.8, 0.2), CFrame.new(-10.6, 3.3, -15), Color3.fromRGB(160, 120, 55), Enum.Material.Metal)
+	mirrorFrame.CanCollide = false
+	local mirrorGlass = part(world, "MirrorGlass", Vector3.new(1.8, 2.4, 0.06), CFrame.new(-10.6, 3.3, -15.1), Color3.fromRGB(180, 210, 230), Enum.Material.Glass, 0.25, false)
+	mirrorGlass.CanCollide = false
+
+	local lamp = part(world, "DeskLamp", Vector3.new(0.5, 0.9, 0.5), CFrame.new(-5.6, 2.9, -15), Color3.fromRGB(255, 210, 140), Enum.Material.Neon)
+	lamp.CanCollide = false
+	addPointLight(lamp, Color3.fromRGB(255, 190, 110), 1.6, 16)
+
+	local moon = part(world, "Moon", Vector3.new(34, 34, 34), CFrame.new(130, 95, -180), Color3.fromRGB(230, 235, 255), Enum.Material.Neon, 0, false)
+	moon.Shape = Enum.PartType.Ball
+	moon.CanCollide = false
+
+	local spawn = Instance.new("SpawnLocation")
+	spawn.Name = "ConductorSpawn"
+	spawn.Size = Vector3.new(7, 1, 7)
+	spawn.CFrame = CFrame.lookAt(Vector3.new(-8, 1.5, -18), Vector3.new(-8, 1.5, -12))
+	spawn.Anchored = true
+	spawn.CanCollide = true
+	spawn.Transparency = 1
+	spawn.Neutral = true
+	spawn.Duration = 0
+	spawn.Parent = world
+end
+
+function WorldBuilder.build()
+	local legacyBaseplate = Workspace:FindFirstChild("Baseplate")
+	if legacyBaseplate and legacyBaseplate:IsA("BasePart") then
+		legacyBaseplate:Destroy()
+	end
+
+	local old = Workspace:FindFirstChild(WORLD_NAME)
+	if old then
+		old:Destroy()
+	end
+
+	local oldPassengers = Workspace:FindFirstChild(PASSENGER_FOLDER)
+	if oldPassengers then
+		oldPassengers:Destroy()
+	end
+
+	local world = Instance.new("Folder")
+	world.Name = WORLD_NAME
+
+	part(world, "Baseplate", Vector3.new(260, 2, 260), CFrame.new(0, -1, 0), Color3.fromRGB(45, 48, 52), Enum.Material.Slate)
+	buildStation(world)
+	buildTrain(world)
+
+	world.Parent = Workspace
+	buildLighting()
+
+	local passengers = Instance.new("Folder")
+	passengers.Name = PASSENGER_FOLDER
+	passengers.Parent = Workspace
+end
+
+function WorldBuilder.clearPassengers()
+	local folder = Workspace:FindFirstChild(PASSENGER_FOLDER)
+	if folder then
+		folder:Destroy()
+	end
+end
+
+local function createPassengerModel(data)
+	local model = Instance.new("Model")
+	model.Name = "Passenger_" .. data.id
+
+	local skin = data.appearance.skinColor
+	local shirt = data.appearance.shirtColor
+	local pants = data.appearance.pantsColor
+	local hat = data.appearance.hatColor
+
+	local torso = part(model, "Torso", Vector3.new(2, 2, 1), CFrame.new(0, 3, 0), shirt, Enum.Material.Fabric, 0, false)
+	model.PrimaryPart = torso
+	part(model, "Head", Vector3.new(1.5, 1.5, 1.5), CFrame.new(0, 4.6, 0), skin, Enum.Material.SmoothPlastic, 0, false)
+	part(model, "Hat", Vector3.new(1.7, 0.4, 1.7), CFrame.new(0, 5.5, 0), hat, Enum.Material.Fabric, 0, false)
+	part(model, "LeftArm", Vector3.new(0.7, 2, 0.7), CFrame.new(-1.4, 3.1, 0), shirt, Enum.Material.Fabric, 0, false)
+	part(model, "RightArm", Vector3.new(0.7, 2, 0.7), CFrame.new(1.4, 3.1, 0), shirt, Enum.Material.Fabric, 0, false)
+	part(model, "LeftLeg", Vector3.new(0.8, 2, 0.8), CFrame.new(-0.5, 1.2, 0), pants, Enum.Material.Fabric, 0, false)
+	part(model, "RightLeg", Vector3.new(0.8, 2, 0.8), CFrame.new(0.5, 1.2, 0), pants, Enum.Material.Fabric, 0, false)
+	part(model, "LeftShoe", Vector3.new(0.9, 0.35, 1.1), CFrame.new(-0.5, 0.2, -0.15), Color3.fromRGB(35, 30, 30), Enum.Material.SmoothPlastic, 0, false)
+	part(model, "RightShoe", Vector3.new(0.9, 0.35, 1.1), CFrame.new(0.5, 0.2, -0.15), Color3.fromRGB(35, 30, 30), Enum.Material.SmoothPlastic, 0, false)
+
+	local shadowX = data.shadowWrong and 1.8 or 0
+	local shadowZ = data.shadowWrong and 0.8 or 0
+	local shadow = part(model, "Shadow", Vector3.new(2.4, 0.04, 1.4), CFrame.new(shadowX, -2.97, shadowZ), Color3.fromRGB(5, 5, 8), Enum.Material.SmoothPlastic, 0.55, false)
+	shadow.CanCollide = false
+
+	part(model, "LeftEye", Vector3.new(0.18, 0.18, 0.08), CFrame.new(-0.3, 4.78, -0.77), Color3.fromRGB(20, 20, 20), Enum.Material.SmoothPlastic, 0, false)
+	part(model, "RightEye", Vector3.new(0.18, 0.18, 0.08), CFrame.new(0.3, 4.78, -0.77), Color3.fromRGB(20, 20, 20), Enum.Material.SmoothPlastic, 0, false)
+	part(model, "Mouth", Vector3.new(0.5, 0.08, 0.08), CFrame.new(0, 4.35, -0.77), Color3.fromRGB(80, 30, 40), Enum.Material.SmoothPlastic, 0, false)
+
+	if data.extraFinger then
+		part(model, "ExtraFinger", Vector3.new(0.14, 0.45, 0.14), CFrame.new(1.72, 2.45, -0.15), skin, Enum.Material.SmoothPlastic, 0, false)
+	end
+
+	billboard(model.PrimaryPart, data.name, Vector3.new(0, 2.6, 0), UDim2.fromOffset(220, 44))
+
+	return model
+end
+
+function WorldBuilder.spawnPassenger(data)
+	local folder = Workspace:FindFirstChild(PASSENGER_FOLDER)
+	if not folder then
+		folder = Instance.new("Folder")
+		folder.Name = PASSENGER_FOLDER
+		folder.Parent = Workspace
+	end
+
+	local model = createPassengerModel(data)
+	model:PivotTo(WorldBuilder.startCFrame)
+	model.Parent = folder
+	return model
+end
+
+function WorldBuilder.movePassenger(model, targetCFrame, duration)
+	if not model or not model.PrimaryPart then
+		return
+	end
+
+	local value = Instance.new("CFrameValue")
+	value.Value = model:GetPivot()
+
+	local tween = TweenService:Create(
+		value,
+		TweenInfo.new(duration or 1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		{ Value = targetCFrame }
+	)
+
+	local connection = value.Changed:Connect(function()
+		if model.Parent then
+			model:PivotTo(value.Value)
+		end
+	end)
+
+	tween:Play()
+	tween.Completed:Wait()
+	connection:Disconnect()
+	value:Destroy()
+end
+
+function WorldBuilder.removePassenger(model)
+	if model then
+		model:Destroy()
+	end
+end
+
+return WorldBuilder
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  </Item>
+  </Item>
+  <Item class="StarterPlayer" referent="RBX17">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+  <Item class="StarterPlayerScripts" referent="RBX12">
+    <Properties>
+      <string name="Name">StarterPlayerScripts</string>
+    </Properties>
+  <Item class="LocalScript" referent="RBX11">
+    <Properties>
+      <string name="Name">ClientMain</string>
+      <ProtectedString name="Source"><![CDATA[-- Prototype client: inspection panel, tools, questions, tunnel and results.
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("Config"))
+local Remotes = require(Shared:WaitForChild("Remotes"))
+
+local hatColors = {}
+for _, hat in ipairs(Config.HatColors) do
+	hatColors[hat.name] = hat.color
+end
+
+local function new(className, props, children)
+	local instance = Instance.new(className)
+	for key, value in pairs(props or {}) do
+		instance[key] = value
+	end
+	for _, child in ipairs(children or {}) do
+		child.Parent = instance
+	end
+	return instance
+end
+
+local function corner(instance, radius)
+	local cornerInstance = Instance.new("UICorner")
+	cornerInstance.CornerRadius = UDim.new(0, radius or 8)
+	cornerInstance.Parent = instance
+	return cornerInstance
+end
+
+local function padding(instance, top, right, bottom, left)
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, top or 0)
+	pad.PaddingRight = UDim.new(0, right or top or 0)
+	pad.PaddingBottom = UDim.new(0, bottom or top or 0)
+	pad.PaddingLeft = UDim.new(0, left or right or top or 0)
+	pad.Parent = instance
+	return pad
+end
+
+local function label(parent, props)
+	local instance = new("TextLabel", props)
+	instance.BackgroundTransparency = props.BackgroundTransparency or 1
+	instance.BorderSizePixel = 0
+	instance.Font = props.Font or Enum.Font.Gotham
+	instance.TextColor3 = props.TextColor3 or Color3.fromRGB(235, 230, 215)
+	instance.TextXAlignment = props.TextXAlignment or Enum.TextXAlignment.Left
+	instance.TextYAlignment = props.TextYAlignment or Enum.TextYAlignment.Center
+	instance.TextWrapped = props.TextWrapped ~= false
+	instance.Parent = parent
+	return instance
+end
+
+local function button(parent, props, onClick)
+	local instance = new("TextButton", props)
+	instance.AutoButtonColor = true
+	instance.BorderSizePixel = 0
+	instance.Font = props.Font or Enum.Font.GothamBold
+	instance.TextColor3 = props.TextColor3 or Color3.fromRGB(245, 240, 225)
+	instance.TextWrapped = true
+	instance.TextScaled = props.TextScaled == true
+	instance.Parent = parent
+	instance.MouseButton1Click:Connect(onClick)
+	return instance
+end
+
+local gui = new("ScreenGui", {
+	Name = "NightConductorUI",
+	ResetOnSpawn = false,
+	IgnoreGuiInset = false,
+	ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+	DisplayOrder = 100,
+})
+gui.Parent = playerGui
+
+local background = new("Frame", {
+	Name = "Background",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundColor3 = Color3.fromRGB(8, 12, 15),
+	BackgroundTransparency = 0.35,
+	BorderSizePixel = 0,
+})
+background.Parent = gui
+
+local root = new("Frame", {
+	Name = "Root",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(1, 1),
+	BackgroundTransparency = 1,
+	BorderSizePixel = 0,
+})
+root.Parent = gui
+
+local uiScale = new("UIScale", { Scale = 1 })
+uiScale.Parent = root
+
+local topBar = new("Frame", {
+	Name = "TopBar",
+	Size = UDim2.new(1, 0, 0, 56),
+	BackgroundColor3 = Color3.fromRGB(14, 25, 23),
+	BackgroundTransparency = 0.08,
+	BorderSizePixel = 0,
+})
+topBar.Parent = root
+
+local title = label(topBar, {
+	Name = "Title",
+	Position = UDim2.new(0, 18, 0, 10),
+	Size = UDim2.new(0, 330, 0, 24),
+	Text = "NIGHT CONDUCTOR",
+	Font = Enum.Font.GothamBlack,
+	TextSize = 20,
+	TextColor3 = Color3.fromRGB(255, 220, 150),
+})
+
+local subtitleLabel = label(topBar, {
+	Name = "Subtitle",
+	Position = UDim2.new(0, 18, 0, 33),
+	Size = UDim2.new(0, 360, 0, 18),
+	Text = "STATION 0  ·  LAST LIGHT  ·  v7",
+	TextSize = 12,
+	TextColor3 = Color3.fromRGB(160, 190, 175),
+})
+
+local progressLabel = label(topBar, {
+	Name = "Progress",
+	AnchorPoint = Vector2.new(1, 0),
+	Position = UDim2.new(1, -18, 0, 8),
+	Size = UDim2.new(0, 240, 0, 20),
+	Text = "ПОДГОТОВКА",
+	TextXAlignment = Enum.TextXAlignment.Right,
+	Font = Enum.Font.GothamBold,
+	TextSize = 14,
+	TextColor3 = Color3.fromRGB(255, 220, 150),
+})
+
+local clockLabel = label(topBar, {
+	Name = "Clock",
+	AnchorPoint = Vector2.new(1, 0),
+	Position = UDim2.new(1, -18, 0, 29),
+	Size = UDim2.new(0, 300, 0, 16),
+	Text = Config.Today .. "  ·  00:13  ·  ПРОВЕРЬ ВСЕ КАНАЛЫ",
+	TextXAlignment = Enum.TextXAlignment.Right,
+	TextSize = 11,
+	TextColor3 = Color3.fromRGB(150, 175, 170),
+})
+
+local panel = new("Frame", {
+	Name = "Panel",
+	Position = UDim2.fromScale(0.42, 0.12),
+	Size = UDim2.fromScale(0.56, 0.88),
+	BackgroundColor3 = Color3.fromRGB(20, 30, 28),
+	BackgroundTransparency = 0.04,
+	BorderSizePixel = 0,
+})
+corner(panel, 14)
+padding(panel, 14)
+panel.Parent = root
+
+local panelStroke = new("UIStroke", {
+	Color = Color3.fromRGB(150, 120, 60),
+	Thickness = 1.5,
+	Transparency = 0.25,
+})
+panelStroke.Parent = panel
+
+local header = new("Frame", {
+	Name = "Header",
+	Size = UDim2.new(1, 0, 0, 56),
+	BackgroundTransparency = 1,
+})
+header.Parent = panel
+
+local nameLabel = label(header, {
+	Name = "Name",
+	Size = UDim2.new(1, 0, 0, 30),
+	Text = "ОЖИДАНИЕ ПАССАЖИРА",
+	Font = Enum.Font.GothamBold,
+	TextSize = 24,
+	TextColor3 = Color3.fromRGB(255, 230, 175),
+})
+
+local metaLabel = label(header, {
+	Name = "Meta",
+	Position = UDim2.new(0, 0, 0, 29),
+	Size = UDim2.new(1, 0, 0, 20),
+	Text = "Смена начнётся через мгновение...",
+	TextSize = 13,
+	TextColor3 = Color3.fromRGB(165, 190, 180),
+})
+
+local body = new("Frame", {
+	Name = "Body",
+	Position = UDim2.new(0, 0, 0, 60),
+	Size = UDim2.new(1, 0, 1, -278),
+	BackgroundTransparency = 1,
+})
+body.Parent = panel
+
+local left = new("Frame", {
+	Name = "Left",
+	Size = UDim2.new(0.38, -6, 1, 0),
+	BackgroundColor3 = Color3.fromRGB(28, 40, 36),
+	BackgroundTransparency = 0.15,
+	BorderSizePixel = 0,
+})
+corner(left, 10)
+left.Parent = body
+
+local photoBox = new("Frame", {
+	Name = "PhotoBox",
+	Position = UDim2.new(0, 8, 0, 8),
+	Size = UDim2.new(1, -16, 0, 64),
+	BackgroundColor3 = Color3.fromRGB(225, 215, 190),
+	BackgroundTransparency = 0,
+	BorderSizePixel = 0,
+})
+corner(photoBox, 6)
+local photoConstraint = new("UISizeConstraint", {
+	MinSize = Vector2.new(170, 64),
+	MaxSize = Vector2.new(310, 64),
+})
+photoConstraint.Parent = photoBox
+photoBox.Parent = left
+
+local photoPaper = new("Frame", {
+	Name = "Paper",
+	Position = UDim2.new(0, 8, 0, 8),
+	Size = UDim2.new(1, -16, 1, -16),
+	BackgroundColor3 = Color3.fromRGB(238, 228, 205),
+	BorderSizePixel = 0,
+})
+photoPaper.Parent = photoBox
+
+local photoHat = new("Frame", {
+	Name = "Hat",
+	Position = UDim2.new(0.2, 0, 0.1, 0),
+	Size = UDim2.new(0.6, 0, 0.2, 0),
+	BackgroundColor3 = Color3.fromRGB(180, 60, 60),
+	BorderSizePixel = 0,
+})
+corner(photoHat, 4)
+photoHat.Parent = photoPaper
+
+local photoFace = new("Frame", {
+	Name = "Face",
+	Position = UDim2.new(0.25, 0, 0.34, 0),
+	Size = UDim2.new(0.5, 0, 0.38, 0),
+	BackgroundColor3 = Color3.fromRGB(205, 170, 135),
+	BorderSizePixel = 0,
+})
+corner(photoFace, 20)
+photoFace.Parent = photoPaper
+
+for _, x in ipairs({ 0.3, 0.7 }) do
+	local eye = new("Frame", {
+		Name = "Eye",
+		Position = UDim2.new(x, -3, 0.3, 0),
+		Size = UDim2.new(0, 6, 0, 6),
+		BackgroundColor3 = Color3.fromRGB(25, 25, 25),
+		BorderSizePixel = 0,
+	})
+	corner(eye, 3)
+	eye.Parent = photoFace
+end
+
+local mouth = new("Frame", {
+	Name = "Mouth",
+	Position = UDim2.new(0.32, 0, 0.66, 0),
+	Size = UDim2.new(0.36, 0, 0, 4),
+	BackgroundColor3 = Color3.fromRGB(90, 45, 55),
+	BorderSizePixel = 0,
+})
+corner(mouth, 2)
+mouth.Parent = photoFace
+
+local photoLabel = label(left, {
+	Name = "PhotoLabel",
+	Position = UDim2.new(0, 10, 0, 72),
+	Size = UDim2.new(1, -20, 0, 18),
+	Text = "ФОТО: —",
+	TextSize = 14,
+	TextColor3 = Color3.fromRGB(210, 195, 160),
+})
+
+local eyeLabel = label(left, {
+	Name = "EyeLabel",
+	Position = UDim2.new(0, 10, 0, 88),
+	Size = UDim2.new(1, -20, 0, 18),
+	Text = "ГЛАЗА: —",
+	TextSize = 14,
+	TextColor3 = Color3.fromRGB(180, 190, 170),
+})
+
+local infoLabel = label(left, {
+	Name = "Info",
+	Position = UDim2.new(0, 10, 0, 104),
+	Size = UDim2.new(1, -20, 0, 48),
+	Text = "",
+	TextSize = 14,
+	TextColor3 = Color3.fromRGB(215, 220, 205),
+	TextYAlignment = Enum.TextYAlignment.Top,
+})
+
+local lookButton = button(left, {
+	Name = "LookButton",
+	Position = UDim2.new(0, 10, 1, -32),
+	Size = UDim2.new(1, -20, 0, 30),
+	Text = "ОСМОТРЕТЬ ПАССАЖИРА",
+	Visible = false,
+	BackgroundColor3 = Color3.fromRGB(110, 85, 45),
+	TextSize = 12,
+}, function()
+	-- assigned after the helper exists
+end)
+corner(lookButton, 7)
+
+local right = new("Frame", {
+	Name = "Right",
+	Position = UDim2.new(0.39, 6, 0, 0),
+	Size = UDim2.new(0.61, -6, 1, 0),
+	BackgroundTransparency = 1,
+})
+right.Parent = body
+
+local ruleLabel = new("TextLabel", {
+	Name = "Rule",
+	Size = UDim2.new(1, 0, 0, 38),
+	BackgroundColor3 = Color3.fromRGB(70, 55, 25),
+	BackgroundTransparency = 0.15,
+	BorderSizePixel = 0,
+	Text = "ПРАВИЛО СМЕНЫ",
+	TextColor3 = Color3.fromRGB(255, 225, 155),
+	Font = Enum.Font.GothamBold,
+	TextSize = 14,
+	TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextYAlignment = Enum.TextYAlignment.Center,
+})
+corner(ruleLabel, 6)
+padding(ruleLabel, 0, 8, 0, 8)
+ruleLabel.Parent = right
+
+local docScroll = new("Frame", {
+	Name = "Documents",
+	Position = UDim2.new(0, 0, 0, 44),
+	Size = UDim2.new(1, 0, 1, -44),
+	BackgroundTransparency = 1,
+	BorderSizePixel = 0,
+})
+docScroll.Parent = right
+
+local docList = new("Frame", {
+	Name = "DocList",
+	Size = UDim2.new(1, 0, 1, 0),
+	BackgroundTransparency = 1,
+})
+docList.Parent = docScroll
+
+local docLayout = new("UIListLayout", {
+	Padding = UDim.new(0, 3),
+	SortOrder = Enum.SortOrder.LayoutOrder,
+})
+docLayout.Parent = docList
+
+local actions = new("Frame", {
+	Name = "Actions",
+	Position = UDim2.new(0, 0, 1, -212),
+	Size = UDim2.new(1, 0, 0, 212),
+	BackgroundTransparency = 1,
+})
+actions.Parent = panel
+
+local actionLayout = new("UIListLayout", {
+	Padding = UDim.new(0, 4),
+	SortOrder = Enum.SortOrder.LayoutOrder,
+})
+actionLayout.Parent = actions
+
+local toolRow = new("Frame", {
+	Name = "Tools",
+	LayoutOrder = 1,
+	Size = UDim2.new(1, 0, 0, 36),
+	BackgroundTransparency = 1,
+})
+toolRow.Parent = actions
+
+local toolGrid = new("UIGridLayout", {
+	CellSize = UDim2.new(0.16, -4, 1, 0),
+	CellPadding = UDim2.new(0, 4, 0, 0),
+	SortOrder = Enum.SortOrder.LayoutOrder,
+	FillDirectionMaxCells = 6,
+})
+toolGrid.Parent = toolRow
+
+local toolResult = new("TextLabel", {
+	Name = "ToolResult",
+	LayoutOrder = 2,
+	Size = UDim2.new(1, 0, 0, 38),
+	BackgroundColor3 = Color3.fromRGB(10, 18, 16),
+	BackgroundTransparency = 0.2,
+	BorderSizePixel = 0,
+	Text = "Используй инструменты. Сравни фото, дату и поведение.",
+	TextColor3 = Color3.fromRGB(220, 225, 205),
+	Font = Enum.Font.Gotham,
+	TextSize = 14,
+	TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextYAlignment = Enum.TextYAlignment.Center,
+})
+corner(toolResult, 6)
+padding(toolResult, 0, 8, 0, 8)
+toolResult.Parent = actions
+
+local questionRow = new("Frame", {
+	Name = "Questions",
+	LayoutOrder = 3,
+	Size = UDim2.new(1, 0, 0, 32),
+	BackgroundTransparency = 1,
+})
+questionRow.Parent = actions
+
+local questionGrid = new("UIGridLayout", {
+	CellSize = UDim2.new(0.32, -4, 1, 0),
+	CellPadding = UDim2.new(0, 4, 0, 0),
+	SortOrder = Enum.SortOrder.LayoutOrder,
+	FillDirectionMaxCells = 3,
+})
+questionGrid.Parent = questionRow
+
+local dialogueLabel = new("TextLabel", {
+	Name = "Dialogue",
+	LayoutOrder = 4,
+	Size = UDim2.new(1, 0, 0, 32),
+	BackgroundColor3 = Color3.fromRGB(10, 18, 16),
+	BackgroundTransparency = 0.2,
+	BorderSizePixel = 0,
+	Text = "Задай вопрос, чтобы услышать историю.",
+	TextColor3 = Color3.fromRGB(190, 210, 195),
+	Font = Enum.Font.Gotham,
+	TextSize = 14,
+	TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextYAlignment = Enum.TextYAlignment.Center,
+})
+corner(dialogueLabel, 6)
+padding(dialogueLabel, 0, 8, 0, 8)
+dialogueLabel.Parent = actions
+
+local decisionRow = new("Frame", {
+	Name = "Decisions",
+	LayoutOrder = 5,
+	Size = UDim2.new(1, 0, 0, 42),
+	BackgroundTransparency = 1,
+})
+decisionRow.Parent = actions
+
+local decisionGrid = new("UIGridLayout", {
+	CellSize = UDim2.new(0.32, -4, 1, 0),
+	CellPadding = UDim2.new(0, 4, 0, 0),
+	SortOrder = Enum.SortOrder.LayoutOrder,
+	FillDirectionMaxCells = 3,
+})
+decisionGrid.Parent = decisionRow
+
+local toast = new("Frame", {
+	Name = "Toast",
+	AnchorPoint = Vector2.new(0.5, 0),
+	Position = UDim2.fromScale(0.5, 0.12),
+	Size = UDim2.fromScale(0.52, 0.09),
+	BackgroundColor3 = Color3.fromRGB(25, 40, 35),
+	BackgroundTransparency = 0.05,
+	BorderSizePixel = 0,
+	Visible = false,
+})
+corner(toast, 10)
+toast.Parent = root
+
+local toastLabel = new("TextLabel", {
+	Name = "Text",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundTransparency = 1,
+	Text = "",
+	TextColor3 = Color3.fromRGB(245, 240, 225),
+	Font = Enum.Font.GothamBold,
+	TextSize = 15,
+	TextWrapped = true,
+	TextScaled = true,
+})
+toastLabel.Parent = toast
+padding(toastLabel, 8, 12, 8, 12)
+
+local tunnelOverlay = new("Frame", {
+	Name = "TunnelOverlay",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+	BackgroundTransparency = 0.04,
+	BorderSizePixel = 0,
+	Visible = false,
+})
+tunnelOverlay.Parent = gui
+
+local tunnelCard = new("Frame", {
+	Name = "Card",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(0.54, 0.6),
+	BackgroundColor3 = Color3.fromRGB(12, 16, 20),
+	BackgroundTransparency = 0.02,
+	BorderSizePixel = 0,
+})
+corner(tunnelCard, 16)
+tunnelCard.Parent = tunnelOverlay
+
+local tunnelTitle = label(tunnelCard, {
+	Name = "Title",
+	Position = UDim2.new(0, 24, 0, 20),
+	Size = UDim2.new(1, -48, 0, 34),
+	Text = "ЧЁРНАЯ МИЛЯ",
+	Font = Enum.Font.GothamBlack,
+	TextSize = 26,
+	TextColor3 = Color3.fromRGB(255, 230, 170),
+	TextXAlignment = Enum.TextXAlignment.Center,
+})
+
+local tunnelText = label(tunnelCard, {
+	Name = "Text",
+	Position = UDim2.new(0, 24, 0, 64),
+	Size = UDim2.new(1, -48, 0, 80),
+	Text = "",
+	TextSize = 15,
+	TextColor3 = Color3.fromRGB(220, 225, 220),
+	TextXAlignment = Enum.TextXAlignment.Center,
+	TextYAlignment = Enum.TextYAlignment.Top,
+})
+
+local tunnelButtons = new("Frame", {
+	Name = "Buttons",
+	Position = UDim2.new(0, 24, 0, 160),
+	Size = UDim2.new(1, -48, 1, -180),
+	BackgroundTransparency = 1,
+})
+tunnelButtons.Parent = tunnelCard
+
+local tunnelButtonLayout = new("UIGridLayout", {
+	CellSize = UDim2.new(1, 0, 0, 30),
+	CellPadding = UDim2.new(0, 0, 0, 7),
+	SortOrder = Enum.SortOrder.LayoutOrder,
+	FillDirectionMaxCells = 1,
+})
+tunnelButtonLayout.Parent = tunnelButtons
+
+local resultsOverlay = new("Frame", {
+	Name = "ResultsOverlay",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundColor3 = Color3.fromRGB(8, 12, 15),
+	BackgroundTransparency = 0.08,
+	BorderSizePixel = 0,
+	Visible = false,
+})
+resultsOverlay.Parent = gui
+
+local resultsCard = new("Frame", {
+	Name = "Card",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(0.5, 0.56),
+	BackgroundColor3 = Color3.fromRGB(22, 32, 30),
+	BackgroundTransparency = 0.02,
+	BorderSizePixel = 0,
+})
+corner(resultsCard, 16)
+resultsCard.Parent = resultsOverlay
+
+local resultsTitle = label(resultsCard, {
+	Name = "Title",
+	Position = UDim2.new(0, 20, 0, 18),
+	Size = UDim2.new(1, -40, 0, 34),
+	Text = "СМЕНА ОКОНЧЕНА",
+	Font = Enum.Font.GothamBlack,
+	TextSize = 26,
+	TextColor3 = Color3.fromRGB(255, 225, 160),
+	TextXAlignment = Enum.TextXAlignment.Center,
+})
+
+local starsLabel = label(resultsCard, {
+	Name = "Stars",
+	Position = UDim2.new(0, 20, 0, 58),
+	Size = UDim2.new(1, -40, 0, 38),
+	Text = "★★★",
+	Font = Enum.Font.GothamBlack,
+	TextSize = 28,
+	TextColor3 = Color3.fromRGB(255, 210, 90),
+	TextXAlignment = Enum.TextXAlignment.Center,
+})
+
+local statsLabel = label(resultsCard, {
+	Name = "Stats",
+	Position = UDim2.new(0, 20, 0, 104),
+	Size = UDim2.new(1, -40, 0, 120),
+	Text = "",
+	TextSize = 15,
+	TextColor3 = Color3.fromRGB(215, 225, 210),
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextYAlignment = Enum.TextYAlignment.Top,
+})
+
+local payoutLabel = label(resultsCard, {
+	Name = "Payout",
+	Position = UDim2.new(0, 20, 0, 232),
+	Size = UDim2.new(1, -40, 0, 34),
+	Text = "+0 Искр",
+	Font = Enum.Font.GothamBold,
+	TextSize = 22,
+	TextColor3 = Color3.fromRGB(255, 220, 140),
+	TextXAlignment = Enum.TextXAlignment.Center,
+})
+
+local restartButton = button(resultsCard, {
+	Name = "Restart",
+	Position = UDim2.new(0.15, 0, 1, -62),
+	Size = UDim2.new(0.7, 0, 0, 44),
+	Text = "ЕЩЁ РЕЙС",
+	BackgroundColor3 = Color3.fromRGB(115, 85, 40),
+	TextSize = 16,
+}, function()
+	restartButton.Active = false
+	resultsOverlay.Visible = false
+	Remotes.Restart:FireServer()
+end)
+corner(restartButton, 9)
+
+local feedbackBox = new("Frame", {
+	Name = "Feedback",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(0.62, 0.26),
+	BackgroundColor3 = Color3.fromRGB(25, 40, 35),
+	BackgroundTransparency = 0.03,
+	BorderSizePixel = 0,
+	Visible = false,
+	ZIndex = 20,
+	Active = true,
+})
+corner(feedbackBox, 12)
+feedbackBox.Parent = gui
+
+local feedbackStroke = new("UIStroke", {
+	Color = Color3.fromRGB(90, 190, 120),
+	Thickness = 2,
+	Transparency = 0.1,
+})
+feedbackStroke.Parent = feedbackBox
+
+local feedbackTitle = label(feedbackBox, {
+	Name = "Title",
+	Position = UDim2.new(0, 16, 0, 10),
+	Size = UDim2.new(1, -32, 0, 28),
+	Text = "ВЕРНО",
+	Font = Enum.Font.GothamBlack,
+	TextSize = 22,
+	TextColor3 = Color3.fromRGB(180, 235, 170),
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 21,
+})
+
+local feedbackText = label(feedbackBox, {
+	Name = "Text",
+	Position = UDim2.new(0, 16, 0, 40),
+	Size = UDim2.new(1, -32, 1, -50),
+	Text = "",
+	TextSize = 14,
+	TextColor3 = Color3.fromRGB(235, 238, 225),
+	TextXAlignment = Enum.TextXAlignment.Center,
+	TextYAlignment = Enum.TextYAlignment.Top,
+	ZIndex = 21,
+})
+
+local feedbackToken = 0
+
+local function showFeedback(kind, text, hint)
+	feedbackToken = feedbackToken + 1
+	local token = feedbackToken
+	feedbackBox.Visible = true
+	feedbackBox.BackgroundColor3 = kind == "good" and Color3.fromRGB(20, 55, 40) or Color3.fromRGB(70, 25, 30)
+	feedbackStroke.Color = kind == "good" and Color3.fromRGB(90, 190, 120) or Color3.fromRGB(220, 100, 100)
+	feedbackTitle.Text = kind == "good" and "ВЕРНО" or "ОШИБКА"
+	feedbackTitle.TextColor3 = kind == "good" and Color3.fromRGB(180, 235, 170) or Color3.fromRGB(250, 170, 160)
+	feedbackText.Text = text .. (hint and ("\n\nПОДСКАЗКА: " .. hint) or "")
+	task.delay(2.4, function()
+		if feedbackToken == token then
+			feedbackBox.Visible = false
+		end
+	end)
+end
+
+local introOverlay = new("Frame", {
+	Name = "IntroOverlay",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundColor3 = Color3.fromRGB(5, 9, 12),
+	BackgroundTransparency = 0.08,
+	BorderSizePixel = 0,
+	Visible = false,
+	ZIndex = 30,
+	Active = true,
+})
+introOverlay.Parent = gui
+
+local introCard = new("Frame", {
+	Name = "Card",
+	AnchorPoint = Vector2.new(0.5, 0.5),
+	Position = UDim2.fromScale(0.5, 0.5),
+	Size = UDim2.fromScale(0.58, 0.62),
+	BackgroundColor3 = Color3.fromRGB(22, 32, 30),
+	BackgroundTransparency = 0.02,
+	BorderSizePixel = 0,
+	ZIndex = 31,
+	Active = true,
+})
+corner(introCard, 14)
+introCard.Parent = introOverlay
+
+local introTitle = label(introCard, {
+	Name = "Title",
+	Position = UDim2.new(0, 20, 0, 18),
+	Size = UDim2.new(1, -40, 0, 32),
+	Text = "КАК ИГРАТЬ",
+	Font = Enum.Font.GothamBlack,
+	TextSize = 24,
+	TextColor3 = Color3.fromRGB(255, 225, 160),
+	TextXAlignment = Enum.TextXAlignment.Center,
+	ZIndex = 32,
+})
+
+local introText = label(introCard, {
+	Name = "Text",
+	Position = UDim2.new(0, 24, 0, 58),
+	Size = UDim2.new(1, -48, 1, -126),
+	Text = "",
+	TextSize = 14,
+	TextColor3 = Color3.fromRGB(225, 230, 215),
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextYAlignment = Enum.TextYAlignment.Top,
+	ZIndex = 32,
+})
+
+local introButton = button(introCard, {
+	Name = "Start",
+	Position = UDim2.new(0.2, 0, 1, -58),
+	Size = UDim2.new(0.6, 0, 0, 40),
+	Text = "ПОНЯТНО",
+	BackgroundColor3 = Color3.fromRGB(115, 85, 40),
+	TextSize = 16,
+	ZIndex = 32,
+}, function()
+	introOverlay.Visible = false
+end)
+corner(introButton, 8)
+
+local buttonsEnabled = false
+local toolBusy = false
+local askedQuestions = {}
+local currentData = nil
+local tunnelActive = false
+local compactUI = false
+local progressText = ""
+local startTutorial
+local stopTutorial
+local advanceTutorialAfterTool
+local advanceTutorialAfterDecision
+
+local toolButtons = {}
+local questionButtons = {}
+local decisionButtons = {}
+local toolButtonById = {}
+local decisionButtonById = {}
+local baseColors = {}
+table.insert(toolButtons, lookButton)
+baseColors[lookButton] = Color3.fromRGB(110, 85, 45)
+
+local function setButtonsEnabled(enabled)
+	buttonsEnabled = enabled
+	for _, item in ipairs(toolButtons) do
+		item.Active = enabled
+		item.AutoButtonColor = enabled
+		item.TextTransparency = enabled and 0 or 0.45
+	end
+	for _, item in ipairs(questionButtons) do
+		item.Active = enabled
+		item.AutoButtonColor = enabled
+		item.TextTransparency = enabled and 0 or 0.45
+	end
+	for _, item in ipairs(decisionButtons) do
+		item.Active = enabled
+		item.AutoButtonColor = enabled
+		item.TextTransparency = enabled and 0 or 0.45
+	end
+end
+
+local function clearHighlights()
+	for buttonInstance, baseColor in pairs(baseColors) do
+		if buttonInstance and buttonInstance.Parent then
+			buttonInstance.BackgroundColor3 = baseColor
+		end
+	end
+end
+
+local function highlightButton(id, shouldHighlight)
+	local buttonInstance = toolButtonById[id] or decisionButtonById[id]
+	if buttonInstance and shouldHighlight then
+		buttonInstance.BackgroundColor3 = Color3.fromRGB(190, 150, 45)
+	end
+end
+
+local function showToast(kind, message)
+	toast.Visible = true
+	toast.BackgroundColor3 = kind == "good" and Color3.fromRGB(30, 75, 50)
+		or kind == "bad" and Color3.fromRGB(85, 30, 35)
+		or Color3.fromRGB(60, 55, 30)
+	toastLabel.Text = message
+	toast.BackgroundTransparency = 0.05
+	toastLabel.TextTransparency = 0
+	task.delay(1.4, function()
+		if not toast.Visible then
+			return
+		end
+		local tween = TweenService:Create(toast, TweenInfo.new(0.35), { BackgroundTransparency = 1 })
+		local textTween = TweenService:Create(toastLabel, TweenInfo.new(0.35), { TextTransparency = 1 })
+		tween:Play()
+		textTween:Play()
+		tween.Completed:Wait()
+		toast.Visible = false
+	end)
+end
+
+local function addDocument(titleText, lines, order)
+	local card = new("Frame", {
+		Name = "Card",
+		LayoutOrder = order,
+		Size = UDim2.new(1, -4, 1, 0),
+		BackgroundColor3 = Color3.fromRGB(235, 225, 200),
+		BackgroundTransparency = 0,
+		BorderSizePixel = 0,
+	})
+	corner(card, 5)
+	card.Parent = docList
+
+	local title = new("TextLabel", {
+		Name = "Title",
+		Position = UDim2.new(0, 10, 0, 4),
+		Size = UDim2.new(1, -20, 0, 16),
+		BackgroundTransparency = 1,
+		Text = titleText,
+		TextColor3 = Color3.fromRGB(120, 75, 30),
+		Font = Enum.Font.GothamBold,
+		TextSize = 13,
+		TextXAlignment = Enum.TextXAlignment.Left,
+	})
+	title.Parent = card
+
+	local bodyLabel = new("TextLabel", {
+		Name = "Body",
+		Position = UDim2.new(0, 10, 0, 21),
+		Size = UDim2.new(1, -20, 1, -25),
+		BackgroundTransparency = 1,
+		Text = table.concat(lines, "\n"),
+		TextColor3 = Color3.fromRGB(38, 32, 24),
+		Font = Enum.Font.Gotham,
+		TextSize = 16,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+	})
+	bodyLabel.Parent = card
+	return bodyLabel
+end
+
+local function classLabel(value)
+	return value == "first" and "Первый класс" or "Второй класс"
+end
+
+local function renderDossier(data)
+	for _, child in ipairs(docList:GetChildren()) do
+		if child:IsA("Frame") then
+			child:Destroy()
+		end
+	end
+
+	local dossierLines
+	if compactUI then
+		dossierLines = {
+			"БИЛЕТ № " .. data.ticket.number .. "  ·  " .. classLabel(data.ticket.class) .. "  ·  место " .. data.ticket.seat,
+			"0 → " .. data.ticket.to .. "  ·  " .. data.ticket.date,
+			"ПАСПОРТ: " .. data.name .. ", " .. tostring(data.age) .. "  ·  " .. data.passport.photoHatName .. " шляпа",
+			"Глаза: " .. data.passport.eyeColor .. "  ·  Багаж: " .. data.luggage.tag .. ", " .. tostring(data.luggage.weight) .. " кг",
+		}
+	else
+		dossierLines = {
+			"БИЛЕТ № " .. data.ticket.number .. "  ·  " .. classLabel(data.ticket.class) .. "  ·  место " .. data.ticket.seat,
+			"0 → " .. data.ticket.to .. "  ·  " .. data.ticket.date .. "  ·  " .. data.ticket.stamp,
+			"ПАСПОРТ: " .. data.name .. ", " .. tostring(data.age) .. "  ·  " .. data.passport.number .. "  ·  " .. data.passport.origin,
+			"Фото: " .. data.passport.photoHatName .. " шляпа  ·  глаза: " .. data.passport.eyeColor,
+			"Багаж: " .. data.luggage.tag .. "  ·  " .. tostring(data.luggage.weight) .. " кг  ·  " .. data.luggage.contents,
+		}
+	end
+
+	local dossierBody = addDocument("ДОСЬЕ", dossierLines, 1)
+	if compactUI and dossierBody then
+		local dossierCard = dossierBody.Parent
+		local dossierTitle = dossierCard and dossierCard:FindFirstChild("Title")
+		if dossierTitle then
+			dossierTitle.Visible = false
+		end
+		dossierBody.Position = UDim2.new(0, 10, 0, 2)
+		dossierBody.Size = UDim2.new(1, -20, 1, -4)
+		dossierBody.TextSize = 16
+	end
+end
+
+local function showPassenger(data)
+	currentData = data
+	askedQuestions = {}
+	toast.Visible = false
+	feedbackBox.Visible = false
+	clearHighlights()
+	setButtonsEnabled(true)
+	panel.Visible = true
+	tunnelOverlay.Visible = false
+	resultsOverlay.Visible = false
+
+	nameLabel.Text = data.name
+	metaLabel.Text = "→ " .. data.destination .. "  ·  место " .. data.seat .. "  ·  " .. classLabel(data.class) .. (progressText ~= "" and ("  ·  " .. progressText) or "")
+	photoHat.BackgroundColor3 = hatColors[data.passport.photoHatName] or Color3.fromRGB(120, 120, 120)
+	photoLabel.Text = "ФОТО: " .. data.passport.photoHatName .. " шляпа"
+	eyeLabel.Text = "ГЛАЗА: " .. data.passport.eyeColor
+	infoLabel.Text = "ВИД: " .. (data.species == "human" and "человек" or data.species) .. "  ·  МЕСТО: " .. data.seat .. "\nКЛАСС: " .. classLabel(data.class) .. "\nПУНКТ: " .. data.destination
+	if data.tutorial then
+		ruleLabel.Text = data.tutorial.text
+		ruleLabel.BackgroundColor3 = Color3.fromRGB(95, 70, 25)
+		if startTutorial then
+			startTutorial(data.tutorial.index)
+		end
+	else
+		ruleLabel.Text = Config.Checklist
+		ruleLabel.BackgroundColor3 = Color3.fromRGB(70, 55, 25)
+		if stopTutorial then
+			stopTutorial()
+		end
+	end
+	toolResult.Text = "Используй инструменты. Сравни фото, дату и поведение."
+	dialogueLabel.Text = "Задай вопрос, чтобы услышать историю."
+
+	renderDossier(data)
+end
+
+local function requestTool(toolId)
+	if not buttonsEnabled or toolBusy or not currentData then
+		return
+	end
+	toolBusy = true
+	local ok, result = pcall(function()
+		return Remotes.Inspect:InvokeServer(toolId)
+	end)
+	toolBusy = false
+	if ok and type(result) == "table" and result.text then
+		toolResult.Text = result.text
+	else
+		toolResult.Text = "Инструмент не отвечает."
+	end
+	if advanceTutorialAfterTool then
+		advanceTutorialAfterTool(toolId)
+	end
+end
+
+local function requestQuestion(questionId)
+	if not buttonsEnabled or not currentData then
+		return
+	end
+	if askedQuestions[questionId] then
+		dialogueLabel.Text = "Ты уже задал этот вопрос."
+		return
+	end
+	askedQuestions[questionId] = true
+	local ok, result = pcall(function()
+		return Remotes.Ask:InvokeServer(questionId)
+	end)
+	if ok and type(result) == "table" and result.text then
+		local questionText = "Вопрос"
+		for _, question in ipairs(Config.Questions) do
+			if question.id == questionId then
+				questionText = question.text
+				break
+			end
+		end
+		dialogueLabel.Text = "— " .. questionText .. "\n«" .. result.text .. "»"
+		toolResult.Text = "— " .. questionText .. "\n«" .. result.text .. "»"
+	else
+		toolResult.Text = "Пассажир молчит."
+		dialogueLabel.Text = "Пассажир молчит."
+	end
+end
+
+local function decide(decision)
+	if not buttonsEnabled or not currentData then
+		return
+	end
+	setButtonsEnabled(false)
+	toolResult.Text = "Решение отправлено..."
+	if advanceTutorialAfterDecision then
+		advanceTutorialAfterDecision(decision)
+	end
+	Remotes.Decide:FireServer(decision)
+end
+
+for index, tool in ipairs({
+	{ id = "mirror", text = "ЗЕРКАЛО", color = Color3.fromRGB(55, 85, 105) },
+	{ id = "lamp", text = "ЛАМПА", color = Color3.fromRGB(105, 80, 35) },
+	{ id = "magnifier", text = "ЛУПА", color = Color3.fromRGB(70, 70, 95) },
+	{ id = "compass", text = "КОМПАС", color = Color3.fromRGB(45, 90, 75) },
+	{ id = "cat", text = "КОТ", color = Color3.fromRGB(95, 65, 45) },
+	{ id = "look", text = "ОСМОТР", color = Color3.fromRGB(80, 75, 50) },
+}) do
+	local toolButton = button(toolRow, {
+		Name = tool.id,
+		LayoutOrder = index,
+		Text = tool.text,
+		BackgroundColor3 = tool.color,
+		TextSize = 12,
+	}, function()
+		requestTool(tool.id)
+	end)
+	corner(toolButton, 6)
+	table.insert(toolButtons, toolButton)
+	toolButtonById[tool.id] = toolButton
+	baseColors[toolButton] = tool.color
+end
+
+for index, question in ipairs(Config.Questions) do
+	local questionButton = button(questionRow, {
+		Name = question.id,
+		LayoutOrder = index,
+		Text = question.text,
+		BackgroundColor3 = Color3.fromRGB(35, 55, 50),
+		TextSize = 12,
+	}, function()
+		requestQuestion(question.id)
+	end)
+	corner(questionButton, 6)
+	table.insert(questionButtons, questionButton)
+end
+
+local decisionData = {
+	{ id = "admit", text = "ПРОПУСТИТЬ", color = Color3.fromRGB(35, 95, 60) },
+	{ id = "deny", text = "ОТКАЗАТЬ", color = Color3.fromRGB(110, 40, 45) },
+	{ id = "hold", text = "ЗАДЕРЖАТЬ", color = Color3.fromRGB(95, 80, 35) },
+}
+for index, decision in ipairs(decisionData) do
+	local decisionButton = button(decisionRow, {
+		Name = decision.id,
+		LayoutOrder = index,
+		Text = decision.text,
+		BackgroundColor3 = decision.color,
+		TextSize = 14,
+	}, function()
+		decide(decision.id)
+	end)
+	corner(decisionButton, 7)
+	table.insert(decisionButtons, decisionButton)
+	decisionButtonById[decision.id] = decisionButton
+	baseColors[decisionButton] = decision.color
+end
+
+-- Roblox-style spotlight tutorial: dim everything except the target control.
+local tutorialLayer = new("Frame", {
+	Name = "TutorialLayer",
+	Size = UDim2.fromScale(1, 1),
+	BackgroundTransparency = 1,
+	Visible = false,
+	ZIndex = 40,
+})
+tutorialLayer.Parent = gui
+
+local shadeTop = new("Frame", {
+	Name = "ShadeTop",
+	BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+	BackgroundTransparency = 0.45,
+	BorderSizePixel = 0,
+	Active = true,
+	ZIndex = 41,
+})
+shadeTop.Parent = tutorialLayer
+
+local shadeBottom = new("Frame", {
+	Name = "ShadeBottom",
+	BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+	BackgroundTransparency = 0.45,
+	BorderSizePixel = 0,
+	Active = true,
+	ZIndex = 41,
+})
+shadeBottom.Parent = tutorialLayer
+
+local shadeLeft = new("Frame", {
+	Name = "ShadeLeft",
+	BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+	BackgroundTransparency = 0.45,
+	BorderSizePixel = 0,
+	Active = true,
+	ZIndex = 41,
+})
+shadeLeft.Parent = tutorialLayer
+
+local shadeRight = new("Frame", {
+	Name = "ShadeRight",
+	BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+	BackgroundTransparency = 0.45,
+	BorderSizePixel = 0,
+	Active = true,
+	ZIndex = 41,
+})
+shadeRight.Parent = tutorialLayer
+
+local spotBorder = new("Frame", {
+	Name = "SpotBorder",
+	BackgroundTransparency = 1,
+	BorderSizePixel = 0,
+	Active = false,
+	ZIndex = 42,
+})
+spotBorder.Parent = tutorialLayer
+
+local spotStroke = new("UIStroke", {
+	Color = Color3.fromRGB(255, 205, 90),
+	Thickness = 3,
+	Transparency = 0.1,
+})
+spotStroke.Parent = spotBorder
+spotBorder.Visible = false
+
+local spotPulse = TweenService:Create(
+	spotStroke,
+	TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+	{ Transparency = 0.7 }
+)
+spotPulse:Play()
+
+local tooltip = new("Frame", {
+	Name = "Tooltip",
+	BackgroundColor3 = Color3.fromRGB(18, 28, 26),
+	BackgroundTransparency = 0,
+	BorderSizePixel = 0,
+	Active = true,
+	ZIndex = 43,
+})
+corner(tooltip, 10)
+tooltip.Parent = tutorialLayer
+
+local tooltipStroke = new("UIStroke", {
+	Color = Color3.fromRGB(255, 205, 90),
+	Thickness = 1.5,
+	Transparency = 0.2,
+})
+tooltipStroke.Parent = tooltip
+
+local tooltipText = label(tooltip, {
+	Name = "Text",
+	Position = UDim2.new(0, 14, 0, 10),
+	Size = UDim2.new(1, -28, 1, -56),
+	Text = "",
+	TextSize = 15,
+	TextColor3 = Color3.fromRGB(240, 238, 220),
+	TextXAlignment = Enum.TextXAlignment.Left,
+	TextYAlignment = Enum.TextYAlignment.Top,
+	ZIndex = 44,
+})
+
+local currentTooltipAction = nil
+
+local tooltipButton = button(tooltip, {
+	Name = "Next",
+	Position = UDim2.new(0.2, 0, 1, -40),
+	Size = UDim2.new(0.6, 0, 0, 32),
+	Text = "ДАЛЕЕ",
+	BackgroundColor3 = Color3.fromRGB(135, 100, 40),
+	TextSize = 14,
+	Visible = false,
+	ZIndex = 44,
+}, function()
+	if currentTooltipAction then
+		local action = currentTooltipAction
+		currentTooltipAction = nil
+		action()
+	end
+end)
+corner(tooltipButton, 7)
+
+local arrow = label(tutorialLayer, {
+	Name = "Arrow",
+	Size = UDim2.fromOffset(30, 30),
+	Text = "▼",
+	Font = Enum.Font.GothamBlack,
+	TextSize = 26,
+	TextColor3 = Color3.fromRGB(255, 205, 90),
+	TextXAlignment = Enum.TextXAlignment.Center,
+	TextYAlignment = Enum.TextYAlignment.Center,
+	BackgroundTransparency = 1,
+	ZIndex = 45,
+})
+
+local tutorialFlow = {
+	[1] = {
+		{
+			target = "docs",
+			text = "Ты — ночной кондуктор.\nСверь билет и паспорт: имя, дата, место.\nАномалия может быть не только в дате.",
+			button = "ДАЛЕЕ",
+		},
+		{
+			target = "decision:admit",
+			text = "Всё совпадает? Нажми ПРОПУСТИТЬ.",
+		},
+	},
+	[2] = {
+		{
+			target = "tool:magnifier",
+			text = "Дата на билете 12.04.1912, а сегодня 30.10.2026.\nНажми ЛУПА.",
+		},
+		{
+			target = "decision:deny",
+			text = "Дата не совпадает. Нажми ОТКАЗАТЬ.",
+		},
+	},
+	[3] = {
+		{
+			target = "tool:lamp",
+			text = "Дата верная — это ловушка.\nПроверь тень: нажми ЛАМПА.",
+		},
+		{
+			target = "decision:deny",
+			text = "Тень неправильная. Нажми ОТКАЗАТЬ.",
+		},
+	},
+	[4] = {
+		{
+			target = "tool:mirror",
+			text = "Проверь отражение: нажми ЗЕРКАЛО.",
+		},
+		{
+			target = "decision:deny",
+			text = "Отражения нет. Нажми ОТКАЗАТЬ.",
+		},
+	},
+	[5] = {
+		{
+			target = "tool:magnifier",
+			text = "Проверь руки: нажми ЛУПА.",
+		},
+		{
+			target = "decision:deny",
+			text = "На руке шесть пальцев. Нажми ОТКАЗАТЬ.",
+		},
+	},
+	[6] = {},
+}
+
+local currentTutorialIndex = nil
+local currentTutorialPhase = 1
+local currentSpotlightTarget = nil
+local tutorialAdvanceScheduled = false
+local targetHighlightStroke = nil
+local targetHighlightTween = nil
+
+local function resolveTutorialTarget(targetName)
+	if targetName == "docs" then
+		return docScroll
+	elseif targetName == "panel" then
+		return panel
+	elseif targetName == "look" then
+		return lookButton
+	elseif string.sub(targetName, 1, 5) == "tool:" then
+		return toolButtonById[string.sub(targetName, 6)]
+	elseif string.sub(targetName, 1, 9) == "decision:" then
+		return decisionButtonById[string.sub(targetName, 10)]
+	end
+	return nil
+end
+
+local function setTargetHighlight(target)
+	if targetHighlightTween then
+		targetHighlightTween:Cancel()
+		targetHighlightTween = nil
+	end
+	if targetHighlightStroke then
+		targetHighlightStroke:Destroy()
+		targetHighlightStroke = nil
+	end
+	if target then
+		local stroke = Instance.new("UIStroke")
+		stroke.Name = "TutorialHighlight"
+		stroke.Color = Color3.fromRGB(255, 205, 90)
+		stroke.Thickness = 3
+		stroke.Transparency = 0.1
+		stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		stroke.Parent = target
+		targetHighlightStroke = stroke
+		targetHighlightTween = TweenService:Create(
+			stroke,
+			TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+			{ Transparency = 0.7 }
+		)
+		targetHighlightTween:Play()
+	end
+end
+
+local function getVisibleRect(object)
+	local position = object.AbsolutePosition
+	local size = object.AbsoluteSize
+	local x, y = position.X, position.Y
+	local width, height = size.X, size.Y
+
+	local ancestor = object.Parent
+	while ancestor and ancestor ~= gui do
+		if ancestor:IsA("ScrollingFrame") then
+			local clipPosition = ancestor.AbsolutePosition
+			local clipSize = ancestor.AbsoluteSize
+			local newX = math.max(x, clipPosition.X)
+			local newY = math.max(y, clipPosition.Y)
+			local newRight = math.min(x + width, clipPosition.X + clipSize.X)
+			local newBottom = math.min(y + height, clipPosition.Y + clipSize.Y)
+			x = newX
+			y = newY
+			width = math.max(0, newRight - newX)
+			height = math.max(0, newBottom - newY)
+		end
+		ancestor = ancestor.Parent
+	end
+
+	return x, y, width, height
+end
+
+local function layoutSpotlight()
+	if not currentSpotlightTarget then
+		return
+	end
+
+	local target = resolveTutorialTarget(currentSpotlightTarget)
+	if not target or not target.Visible then
+		return
+	end
+
+	local camera = workspace.CurrentCamera
+	local screen = tutorialLayer.AbsoluteSize
+	if screen.X < 1 or screen.Y < 1 then
+		screen = camera and camera.ViewportSize or Vector2.new(1280, 720)
+	end
+	local x, y, width, height = getVisibleRect(target)
+	if width <= 1 or height <= 1 then
+		return
+	end
+	local padding = 4
+
+	x = math.max(0, x - padding)
+	y = math.max(0, y - padding)
+	width = math.min(screen.X - x, width + padding * 2)
+	height = math.min(screen.Y - y, height + padding * 2)
+
+	shadeTop.Position = UDim2.fromOffset(0, 0)
+	shadeTop.Size = UDim2.fromOffset(screen.X, y)
+
+	shadeBottom.Position = UDim2.fromOffset(0, y + height)
+	shadeBottom.Size = UDim2.fromOffset(screen.X, math.max(0, screen.Y - (y + height)))
+
+	shadeLeft.Position = UDim2.fromOffset(0, y)
+	shadeLeft.Size = UDim2.fromOffset(x, height)
+
+	shadeRight.Position = UDim2.fromOffset(x + width, y)
+	shadeRight.Size = UDim2.fromOffset(math.max(0, screen.X - (x + width)), height)
+
+	spotBorder.Position = UDim2.fromOffset(x, y)
+	spotBorder.Size = UDim2.fromOffset(width, height)
+
+	local tooltipWidth = math.min(360, screen.X - 24)
+	local tooltipHeight = 154
+	local centerX = x + width / 2
+
+	if screen.X < 900 then
+		local bannerWidth = screen.X - 24
+		local bannerHeight = 96
+		tooltip.Position = UDim2.fromOffset(12, 2)
+		tooltip.Size = UDim2.fromOffset(bannerWidth, bannerHeight)
+		tooltipText.Position = UDim2.new(0, 12, 0, 4)
+		tooltipText.Size = UDim2.new(1, -132, 1, -8)
+		tooltipText.TextSize = 14
+		tooltipButton.Position = UDim2.new(1, -106, 0.5, -16)
+		tooltipButton.Size = UDim2.fromOffset(94, 32)
+		tooltipButton.TextSize = 13
+		arrow.Visible = false
+		return
+	end
+
+	tooltipText.Position = UDim2.new(0, 14, 0, 10)
+	tooltipText.Size = UDim2.new(1, -28, 1, -56)
+	tooltipText.TextSize = 15
+	tooltipButton.Position = UDim2.new(0.2, 0, 1, -40)
+	tooltipButton.Size = UDim2.new(0.6, 0, 0, 32)
+	tooltipButton.TextSize = 14
+	arrow.Visible = true
+
+	local freeLeft = panel.AbsolutePosition.X
+	if freeLeft > tooltipWidth + 80 then
+		local dockX = math.clamp(freeLeft / 2 - tooltipWidth / 2, 12, math.max(12, freeLeft - tooltipWidth - 12))
+		local dockY = math.clamp(y + height / 2 - tooltipHeight / 2, 12, math.max(12, screen.Y - tooltipHeight - 12))
+		tooltip.Position = UDim2.fromOffset(dockX, dockY)
+		tooltip.Size = UDim2.fromOffset(tooltipWidth, tooltipHeight)
+		arrow.Text = "▶"
+		arrow.Position = UDim2.fromOffset(dockX + tooltipWidth - 4, dockY + tooltipHeight / 2 - 15)
+		return
+	end
+
+	local placeAbove = (y + height / 2) > screen.Y * 0.55
+	local tooltipY
+	if placeAbove then
+		tooltipY = y - tooltipHeight - 18
+	else
+		tooltipY = y + height + 18
+	end
+	tooltipY = math.clamp(tooltipY, 12, math.max(12, screen.Y - tooltipHeight - 12))
+
+	local tooltipX = math.clamp(centerX - tooltipWidth / 2, 12, math.max(12, screen.X - tooltipWidth - 12))
+	tooltip.Position = UDim2.fromOffset(tooltipX, tooltipY)
+	tooltip.Size = UDim2.fromOffset(tooltipWidth, tooltipHeight)
+
+	if placeAbove then
+		arrow.Text = "▼"
+		arrow.Position = UDim2.fromOffset(centerX - 15, tooltipY + tooltipHeight - 4)
+	else
+		arrow.Text = "▲"
+		arrow.Position = UDim2.fromOffset(centerX - 15, tooltipY - 28)
+	end
+end
+
+local function hideSpotlight()
+	tutorialLayer.Visible = false
+	currentSpotlightTarget = nil
+	currentTooltipAction = nil
+	spotBorder.Visible = false
+	setTargetHighlight(nil)
+end
+
+RunService.RenderStepped:Connect(function()
+	if tutorialLayer.Visible then
+		layoutSpotlight()
+	end
+end)
+
+local function showSpotlight(targetName, text, buttonText, action)
+	currentSpotlightTarget = targetName
+	currentTooltipAction = action
+	tutorialLayer.Visible = true
+	if targetName == "docs" then
+		spotBorder.Visible = true
+		setTargetHighlight(nil)
+	else
+		spotBorder.Visible = false
+		setTargetHighlight(resolveTutorialTarget(targetName))
+	end
+	tooltipText.Text = text or ""
+	tooltipButton.Visible = buttonText ~= nil
+	tooltipButton.Text = buttonText or "ДАЛЕЕ"
+	layoutSpotlight()
+	task.defer(layoutSpotlight)
+end
+
+local function showTutorialPhase()
+	local flow = tutorialFlow[currentTutorialIndex]
+	local phase = flow and flow[currentTutorialPhase]
+	if not phase then
+		hideSpotlight()
+		return
+	end
+	showSpotlight(phase.target, phase.text, phase.button, function()
+		currentTutorialPhase = currentTutorialPhase + 1
+		showTutorialPhase()
+	end)
+end
+
+startTutorial = function(index)
+	currentTutorialIndex = index
+	currentTutorialPhase = 1
+	tutorialAdvanceScheduled = false
+	showTutorialPhase()
+end
+
+stopTutorial = function()
+	currentTutorialIndex = nil
+	currentTutorialPhase = 1
+	tutorialAdvanceScheduled = false
+	hideSpotlight()
+end
+
+advanceTutorialAfterTool = function(toolId)
+	if not currentTutorialIndex or tutorialAdvanceScheduled then
+		return
+	end
+	local flow = tutorialFlow[currentTutorialIndex]
+	local phase = flow and flow[currentTutorialPhase]
+	if phase and phase.target == "tool:" .. toolId then
+		tutorialAdvanceScheduled = true
+		task.delay(0.7, function()
+			tutorialAdvanceScheduled = false
+			local currentFlow = tutorialFlow[currentTutorialIndex]
+			local currentPhase = currentFlow and currentFlow[currentTutorialPhase]
+			if currentPhase and currentPhase.target == "tool:" .. toolId then
+				currentTutorialPhase = currentTutorialPhase + 1
+				showTutorialPhase()
+			end
+		end)
+	end
+end
+
+advanceTutorialAfterDecision = function(decisionId)
+	if not currentTutorialIndex then
+		return
+	end
+	local flow = tutorialFlow[currentTutorialIndex]
+	local phase = flow and flow[currentTutorialPhase]
+	if phase and phase.target == "decision:" .. decisionId then
+		hideSpotlight()
+	end
+end
+
+lookButton.MouseButton1Click:Connect(function()
+	requestTool("look")
+end)
+
+setButtonsEnabled(false)
+
+local function layoutOverlays(short)
+	if short then
+		introCard.Size = UDim2.fromScale(0.94, 0.9)
+		introTitle.Position = UDim2.new(0, 16, 0, 8)
+		introTitle.Size = UDim2.new(1, -32, 0, 26)
+		introTitle.TextSize = 20
+		introText.Position = UDim2.new(0, 16, 0, 40)
+		introText.Size = UDim2.new(1, -32, 1, -98)
+		introText.TextSize = 13
+		introButton.Position = UDim2.new(0.1, 0, 1, -46)
+		introButton.Size = UDim2.new(0.8, 0, 0, 36)
+		introButton.TextSize = 14
+
+		tunnelCard.Size = UDim2.fromScale(0.96, 0.88)
+		tunnelTitle.Position = UDim2.new(0, 16, 0, 6)
+		tunnelTitle.Size = UDim2.new(1, -32, 0, 26)
+		tunnelTitle.TextSize = 20
+		tunnelText.Position = UDim2.new(0, 16, 0, 34)
+		tunnelText.Size = UDim2.new(1, -32, 0, 62)
+		tunnelText.TextSize = 13
+		tunnelButtons.Position = UDim2.new(0, 16, 0, 100)
+		tunnelButtons.Size = UDim2.new(1, -32, 1, -108)
+		tunnelButtonLayout.CellSize = UDim2.new(0.49, -2, 0, 48)
+		tunnelButtonLayout.CellPadding = UDim2.new(0, 4, 0, 4)
+		tunnelButtonLayout.FillDirectionMaxCells = 2
+
+		resultsCard.Size = UDim2.fromScale(0.94, 0.92)
+		resultsTitle.Position = UDim2.new(0, 14, 0, 6)
+		resultsTitle.Size = UDim2.new(1, -28, 0, 24)
+		resultsTitle.TextSize = 20
+		starsLabel.Position = UDim2.new(0, 14, 0, 30)
+		starsLabel.Size = UDim2.new(1, -28, 0, 28)
+		starsLabel.TextSize = 22
+		statsLabel.Position = UDim2.new(0, 14, 0, 60)
+		statsLabel.Size = UDim2.new(1, -28, 0, 120)
+		statsLabel.TextSize = 14
+		payoutLabel.Position = UDim2.new(0, 14, 0, 182)
+		payoutLabel.Size = UDim2.new(1, -28, 0, 26)
+		payoutLabel.TextSize = 19
+		restartButton.Position = UDim2.new(0.1, 0, 1, -48)
+		restartButton.Size = UDim2.new(0.8, 0, 0, 38)
+		restartButton.TextSize = 14
+
+		feedbackBox.Size = UDim2.fromScale(0.94, 0.4)
+		feedbackTitle.Position = UDim2.new(0, 12, 0, 6)
+		feedbackTitle.Size = UDim2.new(1, -24, 0, 22)
+		feedbackTitle.TextSize = 18
+		feedbackText.Position = UDim2.new(0, 12, 0, 32)
+		feedbackText.Size = UDim2.new(1, -24, 1, -38)
+		feedbackText.TextSize = 12
+	else
+		introCard.Size = UDim2.fromScale(0.58, 0.62)
+		introTitle.Position = UDim2.new(0, 20, 0, 18)
+		introTitle.Size = UDim2.new(1, -40, 0, 32)
+		introTitle.TextSize = 24
+		introText.Position = UDim2.new(0, 24, 0, 58)
+		introText.Size = UDim2.new(1, -48, 1, -126)
+		introText.TextSize = 14
+		introButton.Position = UDim2.new(0.2, 0, 1, -58)
+		introButton.Size = UDim2.new(0.6, 0, 0, 40)
+		introButton.TextSize = 16
+
+		tunnelCard.Size = UDim2.fromScale(0.54, 0.72)
+		tunnelTitle.Position = UDim2.new(0, 24, 0, 20)
+		tunnelTitle.Size = UDim2.new(1, -48, 0, 34)
+		tunnelTitle.TextSize = 26
+		tunnelText.Position = UDim2.new(0, 24, 0, 64)
+		tunnelText.Size = UDim2.new(1, -48, 0, 80)
+		tunnelText.TextSize = 15
+		tunnelButtons.Position = UDim2.new(0, 24, 0, 160)
+		tunnelButtons.Size = UDim2.new(1, -48, 1, -180)
+		tunnelButtonLayout.CellSize = UDim2.new(1, 0, 0, 30)
+		tunnelButtonLayout.CellPadding = UDim2.new(0, 0, 0, 7)
+		tunnelButtonLayout.FillDirectionMaxCells = 1
+
+		resultsCard.Size = UDim2.fromScale(0.5, 0.7)
+		resultsTitle.Position = UDim2.new(0, 20, 0, 18)
+		resultsTitle.Size = UDim2.new(1, -40, 0, 34)
+		resultsTitle.TextSize = 26
+		starsLabel.Position = UDim2.new(0, 20, 0, 58)
+		starsLabel.Size = UDim2.new(1, -40, 0, 38)
+		starsLabel.TextSize = 28
+		statsLabel.Position = UDim2.new(0, 20, 0, 104)
+		statsLabel.Size = UDim2.new(1, -40, 0, 120)
+		statsLabel.TextSize = 15
+		payoutLabel.Position = UDim2.new(0, 20, 0, 232)
+		payoutLabel.Size = UDim2.new(1, -40, 0, 34)
+		payoutLabel.TextSize = 22
+		restartButton.Position = UDim2.new(0.15, 0, 1, -62)
+		restartButton.Size = UDim2.new(0.7, 0, 0, 44)
+		restartButton.TextSize = 16
+
+		feedbackBox.Size = UDim2.fromScale(0.62, 0.26)
+		feedbackTitle.Position = UDim2.new(0, 16, 0, 10)
+		feedbackTitle.Size = UDim2.new(1, -32, 0, 28)
+		feedbackTitle.TextSize = 22
+		feedbackText.Position = UDim2.new(0, 16, 0, 40)
+		feedbackText.Size = UDim2.new(1, -32, 1, -50)
+		feedbackText.TextSize = 14
+	end
+end
+
+local lastCompact = nil
+
+local function updateLayout()
+	local camera = workspace.CurrentCamera
+	if not camera then
+		return
+	end
+	local viewport = camera.ViewportSize
+	uiScale.Scale = 1
+	local short = viewport.Y < 500
+	local compactChanged = lastCompact ~= short
+	lastCompact = short
+	compactUI = short
+	layoutOverlays(short)
+
+	if short then
+		topBar.Visible = false
+
+		panel.Position = UDim2.fromScale(0.02, 0.02)
+		panel.Size = UDim2.fromScale(0.96, 0.96)
+
+		header.Size = UDim2.new(1, 0, 0, 44)
+		nameLabel.TextSize = 19
+		nameLabel.Size = UDim2.new(1, -92, 0, 21)
+		metaLabel.Position = UDim2.new(0, 0, 0, 20)
+		metaLabel.Size = UDim2.new(1, -92, 0, 16)
+		metaLabel.TextSize = 12
+
+		photoBox.Parent = header
+		photoBox.Position = UDim2.new(1, -82, 0, 1)
+		photoBox.Size = UDim2.fromOffset(78, 42)
+		photoConstraint.MinSize = Vector2.new(0, 0)
+		photoConstraint.MaxSize = Vector2.new(320, 64)
+		photoPaper.Position = UDim2.new(0, 4, 0, 4)
+		photoPaper.Size = UDim2.new(1, -8, 1, -8)
+
+		body.Position = UDim2.new(0, 0, 0, 44)
+		body.Size = UDim2.new(1, 0, 1, -156)
+
+		left.Visible = false
+		right.Position = UDim2.new(0, 0, 0, 0)
+		right.Size = UDim2.new(1, 0, 1, 0)
+
+		ruleLabel.Size = UDim2.new(1, 0, 0, 30)
+		docScroll.Position = UDim2.new(0, 0, 0, 34)
+		docScroll.Size = UDim2.new(1, 0, 1, -34)
+
+		actions.Position = UDim2.new(0, 0, 1, -112)
+		actions.Size = UDim2.new(1, 0, 0, 112)
+		actionLayout.Padding = UDim.new(0, 2)
+
+		toolRow.Size = UDim2.new(1, 0, 0, 24)
+		toolResult.Size = UDim2.new(1, 0, 0, 28)
+		toolResult.TextSize = 12
+		questionRow.Size = UDim2.new(1, 0, 0, 24)
+		dialogueLabel.Visible = false
+		dialogueLabel.Size = UDim2.new(1, 0, 0, 0)
+		decisionRow.Size = UDim2.new(1, 0, 0, 30)
+	else
+		topBar.Visible = true
+		topBar.Size = UDim2.new(1, 0, 0, 56)
+		title.Position = UDim2.new(0, 18, 0, 10)
+		title.Size = UDim2.new(0, 330, 0, 24)
+		title.TextSize = 20
+		subtitleLabel.Visible = true
+		clockLabel.Visible = true
+		progressLabel.Position = UDim2.new(1, -18, 0, 8)
+		progressLabel.Size = UDim2.new(0, 240, 0, 20)
+		progressLabel.TextSize = 14
+
+		local wide = viewport.X >= 1100
+		panel.Position = wide and UDim2.fromScale(0.36, 0.12) or UDim2.fromScale(0.02, 0.12)
+		panel.Size = wide and UDim2.fromScale(0.62, 0.88) or UDim2.fromScale(0.96, 0.88)
+
+		header.Size = UDim2.new(1, 0, 0, 48)
+		nameLabel.TextSize = 24
+		metaLabel.Position = UDim2.new(0, 0, 0, 24)
+		metaLabel.TextSize = 14
+
+		body.Position = UDim2.new(0, 0, 0, 52)
+		body.Size = UDim2.new(1, 0, 1, -228)
+
+		left.Visible = true
+		right.Position = UDim2.new(0.39, 6, 0, 0)
+		right.Size = UDim2.new(0.61, -6, 1, 0)
+
+		photoBox.Parent = left
+		photoBox.Position = UDim2.new(0, 8, 0, 8)
+		photoBox.Size = UDim2.new(1, -16, 0, 64)
+		photoConstraint.MinSize = Vector2.new(170, 64)
+		photoPaper.Position = UDim2.new(0, 8, 0, 8)
+		photoPaper.Size = UDim2.new(1, -16, 1, -16)
+		nameLabel.Size = UDim2.new(1, 0, 0, 27)
+		metaLabel.Size = UDim2.new(1, 0, 0, 20)
+
+		ruleLabel.Size = UDim2.new(1, 0, 0, 38)
+		docScroll.Position = UDim2.new(0, 0, 0, 48)
+		docScroll.Size = UDim2.new(1, 0, 1, -48)
+
+		actions.Position = UDim2.new(0, 0, 1, -172)
+		actions.Size = UDim2.new(1, 0, 0, 172)
+		actionLayout.Padding = UDim.new(0, 4)
+
+		toolRow.Size = UDim2.new(1, 0, 0, 36)
+		toolResult.Size = UDim2.new(1, 0, 0, 42)
+		toolResult.TextSize = 14
+		questionRow.Size = UDim2.new(1, 0, 0, 34)
+		dialogueLabel.Visible = false
+		dialogueLabel.Size = UDim2.new(1, 0, 0, 0)
+		decisionRow.Size = UDim2.new(1, 0, 0, 44)
+	end
+
+	if compactChanged and currentData then
+		renderDossier(currentData)
+	end
+
+	if tutorialLayer.Visible then
+		layoutSpotlight()
+	end
+end
+
+local function connectCamera()
+	local camera = workspace.CurrentCamera
+	if camera then
+		updateLayout()
+		camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateLayout)
+	end
+end
+
+connectCamera()
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(connectCamera)
+
+local function showTunnel(payload)
+	panel.Visible = false
+	toast.Visible = false
+	feedbackBox.Visible = false
+	introOverlay.Visible = false
+	if stopTutorial then
+		stopTutorial()
+	end
+	tunnelOverlay.Visible = true
+	resultsOverlay.Visible = false
+	tunnelActive = true
+	tunnelTitle.Text = payload.title or "ЧЁРНАЯ МИЛЯ"
+	tunnelText.Text = payload.text or ""
+	tunnelText.TextColor3 = Color3.fromRGB(220, 225, 220)
+
+	for _, child in ipairs(tunnelButtons:GetChildren()) do
+		if child:IsA("TextButton") then
+			child:Destroy()
+		end
+	end
+
+	for index, choice in ipairs(payload.choices or {}) do
+		local choiceButton = button(tunnelButtons, {
+			Name = choice.id,
+			LayoutOrder = index,
+			Size = UDim2.new(1, 0, 0, 38),
+			Text = choice.text,
+			BackgroundColor3 = Color3.fromRGB(65, 30, 35),
+			TextSize = 13,
+		}, function()
+			if not tunnelActive then
+				return
+			end
+			tunnelActive = false
+			Remotes.TunnelChoice:FireServer(choice.id)
+			tunnelText.Text = "Выбор сделан. Поезд входит в тоннель..."
+			for _, other in ipairs(tunnelButtons:GetChildren()) do
+				if other:IsA("TextButton") then
+					other.Active = false
+					other.TextTransparency = 0.5
+				end
+			end
+		end)
+		corner(choiceButton, 7)
+	end
+end
+
+local function showTunnelResult(payload)
+	tunnelText.Text = payload.text or ""
+	tunnelText.TextColor3 = payload.success and Color3.fromRGB(170, 235, 180) or Color3.fromRGB(240, 150, 150)
+	tunnelActive = false
+	for _, child in ipairs(tunnelButtons:GetChildren()) do
+		if child:IsA("TextButton") then
+			child:Destroy()
+		end
+	end
+end
+
+local function showResult(payload)
+	panel.Visible = false
+	toast.Visible = false
+	feedbackBox.Visible = false
+	introOverlay.Visible = false
+	if stopTutorial then
+		stopTutorial()
+	end
+	tunnelOverlay.Visible = false
+	resultsOverlay.Visible = true
+	restartButton.Active = true
+
+	local stars = payload.stars or 1
+	starsLabel.Text = string.rep("★", stars) .. string.rep("☆", math.max(0, 3 - stars))
+	resultsTitle.Text = payload.tunnelSuccess and "СМЕНА ВЫДЕРЖАНА" or "СМЕНА ПРОВАЛЕНА"
+	resultsTitle.TextColor3 = payload.tunnelSuccess and Color3.fromRGB(180, 235, 170) or Color3.fromRGB(245, 160, 150)
+
+	local stats = payload.stats or {}
+	statsLabel.Text = table.concat({
+		"Верных решений: " .. tostring(stats.correct or 0) .. " / " .. tostring(stats.total or Config.TotalPassengers),
+		"Аномалий поймано: " .. tostring(stats.caught or 0),
+		"Ошибок: " .. tostring(stats.mistakes or 0),
+		"Пропущено на посадке: " .. tostring(stats.missed or 0),
+	}, "\n")
+	payoutLabel.Text = "+" .. tostring(payload.payout or 0) .. " Искр"
+end
+
+local function handleEvent(payload)
+	if type(payload) ~= "table" then
+		return
+	end
+
+	if payload.type == "passenger" then
+		showPassenger(payload.data)
+	elseif payload.type == "progress" then
+		progressText = tostring(payload.index) .. "/" .. tostring(payload.total)
+		progressLabel.Text = "ПАССАЖИР " .. tostring(payload.index) .. " / " .. tostring(payload.total)
+	elseif payload.type == "feedback" then
+		if payload.kind == "info" then
+			showToast(payload.kind, payload.text or "")
+			setButtonsEnabled(true)
+		else
+			local text = payload.text or ""
+			toolResult.Text = text
+			showFeedback(payload.kind or "bad", text, payload.hint)
+		end
+	elseif payload.type == "intro" then
+		introTitle.Text = payload.title or "КАК ИГРАТЬ"
+		introText.Text = payload.text or ""
+		introOverlay.Visible = true
+	elseif payload.type == "tunnel" then
+		showTunnel(payload)
+	elseif payload.type == "tunnelResult" then
+		showTunnelResult(payload)
+	elseif payload.type == "quiet" then
+		panel.Visible = false
+		tunnelOverlay.Visible = true
+		resultsOverlay.Visible = false
+		tunnelActive = false
+		tunnelTitle.Text = payload.title or "ТИХАЯ МИЛЯ"
+		tunnelText.Text = payload.text or ""
+		tunnelText.TextColor3 = Color3.fromRGB(190, 210, 220)
+		for _, child in ipairs(tunnelButtons:GetChildren()) do
+			if child:IsA("TextButton") then
+				child:Destroy()
+			end
+		end
+	elseif payload.type == "result" then
+		showResult(payload)
+	elseif payload.type == "reset" then
+		resultsOverlay.Visible = false
+		tunnelOverlay.Visible = false
+		introOverlay.Visible = false
+		feedbackBox.Visible = false
+		if stopTutorial then
+			stopTutorial()
+		end
+		panel.Visible = true
+		currentData = nil
+		progressText = ""
+		clearHighlights()
+		nameLabel.Text = "ОЖИДАНИЕ ПАССАЖИРА"
+		metaLabel.Text = "Смена начинается..."
+		progressLabel.Text = "ПОДГОТОВКА"
+		photoHat.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+		photoLabel.Text = "ФОТО: —"
+		eyeLabel.Text = "ГЛАЗА: —"
+		infoLabel.Text = ""
+		ruleLabel.Text = Config.Checklist
+		ruleLabel.BackgroundColor3 = Color3.fromRGB(70, 55, 25)
+		toolResult.Text = "Смена начинается..."
+		dialogueLabel.Text = "Задай вопрос, чтобы услышать историю."
+		for _, child in ipairs(docList:GetChildren()) do
+			if child:IsA("Frame") then
+				child:Destroy()
+			end
+		end
+		setButtonsEnabled(false)
+	end
+end
+
+Remotes.GameEvent.OnClientEvent:Connect(handleEvent)
+handleEvent({ type = "reset" })
+
+if RunService:IsStudio() then
+	_G.NightConductorTest = {
+		startTutorial = function(index)
+			if startTutorial then
+				startTutorial(index)
+			end
+		end,
+		stopTutorial = function()
+			if stopTutorial then
+				stopTutorial()
+			end
+		end,
+		showResult = showResult,
+		showTunnel = showTunnel,
+		showFeedback = showFeedback,
+		layout = updateLayout,
+	}
+end
+
+print("[NightConductor] client ready")
+
+]]></ProtectedString>
+    </Properties>
+  </Item>
+  </Item>
+  </Item>
+</roblox>

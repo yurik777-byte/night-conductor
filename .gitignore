@@ -1,0 +1,24 @@
+# Roblox Studio lock files
+*.rbxlx.lock
+*.rbxl.lock
+*.rbxm.lock
+*.rbxmx.lock
+
+# Local versioned test builds (canonical build is prototype/NightConductorPrototype.rbxlx)
+prototype/NightConductorPrototype_v*.rbxlx
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Machine-specific local config
+opencode.json

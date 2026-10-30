@@ -1,0 +1,10 @@
+# Roblox place files are generated XML: keep them out of text diffs/merges.
+*.rbxlx -text
+*.rbxl -text
+*.rbxm -text
+*.rbxmx -text
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
