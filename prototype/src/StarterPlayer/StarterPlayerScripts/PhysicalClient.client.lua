@@ -137,8 +137,8 @@ hintBar.Parent = gui
 local contextFrame = new("Frame", {
 	Name = "Context",
 	AnchorPoint = Vector2.new(0.5, 1),
-	Position = UDim2.new(0.5, 0, 1, -42),
-	Size = UDim2.fromOffset(430, 38),
+	Position = UDim2.new(0.5, 0, 1, -110),
+	Size = UDim2.fromOffset(470, 38),
 	BackgroundColor3 = Color3.fromRGB(12, 18, 16),
 	BackgroundTransparency = 0.05,
 	BorderSizePixel = 0,
@@ -462,6 +462,8 @@ local interactables = {}
 local interactableByProp = {}
 local currentInteractable = nil
 local lastContextAt = 0
+local stampEquipped = nil
+local stampHighlight = nil
 
 local function showToast(text, kind)
 	toastLabel.Text = text
@@ -693,15 +695,43 @@ local function stampLabelOnTicket(decision)
 	mark.Parent = surface
 end
 
+local function showStampMode(decision)
+	stampEquipped = decision
+	currentInteractable = nil
+	contextLabel.Text = "ЛКМ — поставить печать: " .. (decision == "admit" and "ПРОПУСТИТЬ" or "ОТКАТАТЬ")
+	contextFrame.Visible = true
+	local ticket = props.Ticket
+	if ticket and not stampHighlight then
+		stampHighlight = Instance.new("Highlight")
+		stampHighlight.Name = "StampTarget"
+		stampHighlight.FillTransparency = 1
+		stampHighlight.OutlineColor = Color3.fromRGB(255, 205, 90)
+		stampHighlight.OutlineTransparency = 0
+		stampHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+		stampHighlight.Parent = ticket
+	end
+end
+
+local function clearStampMode()
+	stampEquipped = nil
+	if stampHighlight then
+		stampHighlight:Destroy()
+		stampHighlight = nil
+	end
+	if not currentInteractable then
+		contextFrame.Visible = false
+	end
+end
+
 local function tryStamp(decision)
 	if stampBusy or not currentData then
 		return
 	end
-	local result = raycastAhead(14)
-	local part = result and result.Instance
-	local hitDocument = part and (part.Name == "Ticket" or part.Name == "Passport")
-	if not hitDocument or not result or result.Distance > 12 then
-		showToast("Подойди к документам и наведи печать на билет.", "info")
+	local character = player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	local ticket = props.Ticket
+	if not ticket or not root or (ticket.Position - root.Position).Magnitude > 11 then
+		showToast("Подойди к столу с документами.", "info")
 		return
 	end
 	stampBusy = true
@@ -785,11 +815,18 @@ local function giveTool(kind)
 		end)
 	else
 		local isAdmit = kind == "admit"
+		local decision = isAdmit and "admit" or "deny"
 		local handle = makeHandle(Vector3.new(0.26, 0.44, 0.26), isAdmit and Color3.fromRGB(40, 110, 65) or Color3.fromRGB(120, 45, 50), Enum.Material.Metal)
-		tool = newTool(isAdmit and "Печать ПРОПУСТИТЬ" or "Печать ОТКАТАТЬ", handle)
-		tool:SetAttribute("Decision", isAdmit and "admit" or "deny")
+		tool = newTool(isAdmit and "ПРОПУСК" or "ОТКАЗ", handle)
+		tool:SetAttribute("Decision", decision)
+		tool.Equipped:Connect(function()
+			showStampMode(decision)
+		end)
+		tool.Unequipped:Connect(function()
+			clearStampMode()
+		end)
 		tool.Activated:Connect(function()
-			tryStamp(tool:GetAttribute("Decision"))
+			tryStamp(decision)
 		end)
 	end
 
@@ -938,6 +975,13 @@ local function updateContext()
 		return
 	end
 
+	if stampEquipped then
+		currentInteractable = nil
+		contextLabel.Text = "ЛКМ — поставить печать: " .. (stampEquipped == "admit" and "ПРОПУСТИТЬ" or "ОТКАТАТЬ")
+		contextFrame.Visible = true
+		return
+	end
+
 	local cam = workspace.CurrentCamera
 	if not cam then
 		return
@@ -1021,6 +1065,7 @@ local function resetPassengerState()
 	setMirror(false)
 	setZoom(false)
 	clearHighlight()
+	clearStampMode()
 	clearTools()
 	restoreProps()
 	nameLabel.Text = ""

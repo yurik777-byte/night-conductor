@@ -256,7 +256,7 @@ local function createPassengerModel(data)
 	local model = Instance.new("Model")
 	model.Name = "Passenger_" .. data.id
 
-	local skin = data.appearance.skinColor
+	local skin = Color3.new(data.appearance.skinColor.R * 0.82, data.appearance.skinColor.G * 0.82, data.appearance.skinColor.B * 0.82)
 	local shirt = data.appearance.shirtColor
 	local pants = data.appearance.pantsColor
 	local hat = data.appearance.hatColor
@@ -342,8 +342,8 @@ local PHYSICAL_WORLD = "NightConductorPhysicalWorld"
 local PHYSICAL_PASSENGERS = "NightConductorPhysicalPassengers"
 local REFLECTION_NAME = "NightConductorReflection"
 
-WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 5.0), Vector3.new(0.6, 3.2, 0.4))
-WorldBuilder.physicalNpc = CFrame.lookAt(Vector3.new(1.1, 3, 0.4), Vector3.new(0, 3, 5.0))
+WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 6.6), Vector3.new(0.6, 3.2, 0.9))
+WorldBuilder.physicalNpc = CFrame.lookAt(Vector3.new(1.1, 3, 0.9), Vector3.new(0, 3, 6.6))
 
 local function surfaceLabel(partInstance, text, face, textSize)
 	local gui = Instance.new("SurfaceGui")
@@ -381,9 +381,9 @@ function WorldBuilder.buildVestibule()
 	end
 
 	buildLighting()
-	Lighting.Brightness = 1.6
-	Lighting.Ambient = Color3.fromRGB(75, 69, 62)
-	Lighting.OutdoorAmbient = Color3.fromRGB(80, 75, 82)
+	Lighting.Brightness = 2.4
+	Lighting.Ambient = Color3.fromRGB(115, 105, 92)
+	Lighting.OutdoorAmbient = Color3.fromRGB(95, 90, 96)
 	Lighting.EnvironmentDiffuseScale = 0.6
 
 	local world = Instance.new("Folder")
@@ -431,15 +431,15 @@ function WorldBuilder.buildVestibule()
 
 	local interiorLamp = part(world, "InteriorLamp", Vector3.new(0.5, 0.1, 0.5), CFrame.new(0, 5.6, -4.6), Color3.fromRGB(255, 225, 170), Enum.Material.Neon)
 	interiorLamp.CanCollide = false
-	addPointLight(interiorLamp, Color3.fromRGB(255, 220, 160), 2.6, 20)
+	addPointLight(interiorLamp, Color3.fromRGB(255, 220, 160), 3.0, 20)
 
 	local doorwayLamp = part(world, "DoorwayLamp", Vector3.new(0.35, 0.1, 0.35), CFrame.new(0, 4.2, -3.0), Color3.fromRGB(255, 225, 170), Enum.Material.Neon)
 	doorwayLamp.CanCollide = false
-	addPointLight(doorwayLamp, Color3.fromRGB(255, 220, 160), 2.0, 14)
+	addPointLight(doorwayLamp, Color3.fromRGB(255, 220, 160), 2.2, 14)
 
 	local vestibuleLamp = part(world, "VestibuleLamp", Vector3.new(0.4, 0.1, 0.4), CFrame.new(0, 3.4, -4.0), Color3.fromRGB(255, 225, 170), Enum.Material.Neon)
 	vestibuleLamp.CanCollide = false
-	addPointLight(vestibuleLamp, Color3.fromRGB(255, 220, 160), 2.2, 12)
+	addPointLight(vestibuleLamp, Color3.fromRGB(255, 220, 160), 2.4, 12)
 
 	local interiorGlow = part(world, "InteriorGlow", Vector3.new(4.4, 3.2, 0.06), CFrame.new(0, 3.0, -6.64), Color3.fromRGB(255, 215, 150), Enum.Material.Neon)
 	interiorGlow.CanCollide = false
@@ -454,9 +454,11 @@ function WorldBuilder.buildVestibule()
 		frameLeft.CanCollide = false
 		local frameRight = part(world, "WindowFrameRight", Vector3.new(0.12, 1.5, 0.08), CFrame.new(x + 1.15, 4.2, -2.18), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
 		frameRight.CanCollide = false
-		local window = part(world, "Window", Vector3.new(2.2, 1.4, 0.04), CFrame.new(x, 4.2, -2.16), Color3.fromRGB(255, 212, 145), Enum.Material.Neon)
+		local window = part(world, "Window", Vector3.new(2.2, 1.4, 0.04), CFrame.new(x, 4.2, -2.16), Color3.fromRGB(18, 28, 36), Enum.Material.Glass)
 		window.CanCollide = false
-		window.Transparency = 0.6
+		window.Transparency = 0.15
+		local glow = part(world, "WindowGlow", Vector3.new(1.9, 0.05, 0.03), CFrame.new(x, 3.56, -2.14), Color3.fromRGB(255, 210, 145), Enum.Material.Neon)
+		glow.CanCollide = false
 	end
 
 	-- Signs beside the door, at eye level
@@ -490,11 +492,11 @@ function WorldBuilder.buildVestibule()
 
 	local canopyLamp = part(world, "CanopyLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 1.8), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
 	canopyLamp.CanCollide = false
-	addPointLight(canopyLamp, Color3.fromRGB(255, 220, 160), 2.4, 28)
+	addPointLight(canopyLamp, Color3.fromRGB(255, 220, 160), 3.0, 28)
 
 	local frontLamp = part(world, "FrontLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 4.0), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
 	frontLamp.CanCollide = false
-	addPointLight(frontLamp, Color3.fromRGB(255, 220, 160), 0.7, 28)
+	addPointLight(frontLamp, Color3.fromRGB(255, 220, 160), 0.9, 28)
 
 	-- Platform props
 	part(world, "BenchSeat", Vector3.new(3, 0.3, 1), CFrame.new(4.6, 1.1, 4.8), Color3.fromRGB(80, 55, 35), Enum.Material.Wood)
@@ -504,7 +506,7 @@ function WorldBuilder.buildVestibule()
 
 	local tableLamp = part(world, "TableLamp", Vector3.new(0.35, 0.2, 0.35), CFrame.new(-3.2, 4.7, 2.0), Color3.fromRGB(255, 220, 165), Enum.Material.Neon)
 	tableLamp.CanCollide = false
-	addPointLight(tableLamp, Color3.fromRGB(255, 215, 155), 0.9, 18)
+	addPointLight(tableLamp, Color3.fromRGB(255, 215, 155), 1.0, 18)
 
 	local desk = part(world, "Table", Vector3.new(2.6, 0.12, 1.2), CFrame.new(-3.2, 2.7, 2.0), Color3.fromRGB(62, 42, 28), Enum.Material.SmoothPlastic)
 	desk.CanCollide = true
@@ -563,22 +565,50 @@ function WorldBuilder.buildVestibule()
 	}
 end
 
-local function buildHand(model, skin, extraFinger)
-	local hand = Instance.new("Model")
-	hand.Name = "RightHand"
-	hand.Parent = model
+local function createR6Passenger(data)
+	local model = Instance.new("Model")
+	model.Name = "PhysicalPassenger_" .. data.id
 
-	local palm = part(hand, "Palm", Vector3.new(0.42, 0.5, 0.18), CFrame.new(1.5, 2.55, -0.58), skin, Enum.Material.SmoothPlastic, 0, false)
+	local skin = Color3.new(data.appearance.skinColor.R * 0.82, data.appearance.skinColor.G * 0.82, data.appearance.skinColor.B * 0.82)
+	local shirt = data.appearance.shirtColor
+	local pants = data.appearance.pantsColor
+	local hatColor = data.appearance.hatColor
+
+	local root = part(model, "HumanoidRootPart", Vector3.new(2, 2, 1), CFrame.new(0, 3, 0), Color3.new(0, 0, 0), Enum.Material.SmoothPlastic, 1, false)
+	root.CanCollide = false
+	model.PrimaryPart = root
+
+	part(model, "Torso", Vector3.new(2, 2, 1), CFrame.new(0, 3, 0), shirt, Enum.Material.Fabric, 0, false)
+	local head = part(model, "Head", Vector3.new(2, 1, 1), CFrame.new(0, 4.5, 0), skin, Enum.Material.SmoothPlastic, 0, false)
+	part(model, "Left Arm", Vector3.new(1, 2, 1), CFrame.new(-1.5, 3, 0), shirt, Enum.Material.Fabric, 0, false)
+	part(model, "Right Arm", Vector3.new(1, 2, 1), CFrame.new(1.5, 3, 0), shirt, Enum.Material.Fabric, 0, false)
+	part(model, "Left Leg", Vector3.new(1, 2, 1), CFrame.new(-0.5, 1, 0), pants, Enum.Material.Fabric, 0, false)
+	part(model, "Right Leg", Vector3.new(1, 2, 1), CFrame.new(0.5, 1, 0), pants, Enum.Material.Fabric, 0, false)
+
+	local face = Instance.new("Decal")
+	face.Name = "Face"
+	face.Texture = "rbxasset://textures/face.png"
+	face.Face = Enum.NormalId.Front
+	face.Parent = head
+
+	-- Recolored classic hat: a low top hat that fits through the train door.
+	part(model, "HatBrim", Vector3.new(2.1, 0.12, 2.1), CFrame.new(0, 5.06, 0), hatColor, Enum.Material.Fabric, 0, false)
+	part(model, "Hat", Vector3.new(1.3, 0.5, 1.3), CFrame.new(0, 5.4, 0), hatColor, Enum.Material.Fabric, 0, false)
+
+	-- Right hand with 5 or 6 fingers, so the magnifier has something to count.
+	local rightHand = Instance.new("Model")
+	rightHand.Name = "RightHand"
+	rightHand.Parent = model
+	local palm = part(rightHand, "Palm", Vector3.new(0.9, 0.32, 0.26), CFrame.new(1.5, 2.02, -0.55), skin, Enum.Material.SmoothPlastic, 0, false)
 	palm.CanCollide = false
-
-	local count = extraFinger and 6 or 5
-	local startX = 1.5 - (count - 1) * 0.055
+	local count = data.extraFinger and 6 or 5
+	local startX = 1.5 - (count - 1) * 0.05
 	for index = 1, count do
 		local finger = part(
-			hand,
+			rightHand,
 			"Finger" .. tostring(index),
-			Vector3.new(0.08, 0.42, 0.1),
-			CFrame.new(startX + (index - 1) * 0.11, 2.13, -0.6),
+			Vector3.new(0.1, 0.4, 0.12),
+			CFrame.new(startX + (index - 1) * 0.1, 1.72, -0.57),
 			skin,
 			Enum.Material.SmoothPlastic,
 			0,
@@ -587,7 +617,35 @@ local function buildHand(model, skin, extraFinger)
 		finger.CanCollide = false
 	end
 
-	return hand
+	local leftHand = Instance.new("Model")
+	leftHand.Name = "LeftHand"
+	leftHand.Parent = model
+	part(leftHand, "Palm", Vector3.new(0.9, 0.32, 0.26), CFrame.new(-1.5, 2.02, -0.55), skin, Enum.Material.SmoothPlastic, 0, false).CanCollide = false
+	for index = 1, 5 do
+		local finger = part(
+			leftHand,
+			"Finger" .. tostring(index),
+			Vector3.new(0.1, 0.4, 0.12),
+			CFrame.new(-1.7 + (index - 1) * 0.1, 1.72, -0.57),
+			skin,
+			Enum.Material.SmoothPlastic,
+			0,
+			false
+		)
+		finger.CanCollide = false
+	end
+
+	local humanoid = Instance.new("Humanoid")
+	humanoid.Name = "Humanoid"
+	humanoid.RigType = Enum.HumanoidRigType.R6
+	humanoid.DisplayName = data.name
+	humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+	humanoid.NameDisplayDistance = 0
+	humanoid.HealthDisplayDistance = 0
+	humanoid.PlatformStand = true
+	humanoid.Parent = model
+
+	return model
 end
 
 function WorldBuilder.clearPhysical()
@@ -608,34 +666,21 @@ function WorldBuilder.spawnPhysicalPassenger(data)
 	folder.Name = PHYSICAL_PASSENGERS
 	folder.Parent = Workspace
 
-	local model = createPassengerModel(data)
+	local model = createR6Passenger(data)
 	model.Name = "PhysicalPassenger_" .. data.id
 
 	-- The fake shadow is the only shadow; real part shadows would fight it.
-	local oldShadow = model:FindFirstChild("Shadow")
-	if oldShadow then
-		oldShadow:Destroy()
-	end
 	for _, child in ipairs(model:GetDescendants()) do
 		if child:IsA("BasePart") then
 			child.CastShadow = false
 		end
 	end
 
-	buildHand(model, data.appearance.skinColor, data.extraFinger)
-
-	-- The physical slice shows the name in the HUD, not as a floating label.
-	local billboardLabel = model:FindFirstChild("Torso") and model.Torso:FindFirstChild("Label")
-	if billboardLabel then
-		billboardLabel:Destroy()
-	end
-
 	local shadowX = data.shadowWrong and 1.0 or -0.9
-	local shadow = part(model, "FloorShadow", Vector3.new(2.2, 0.03, 1.3), CFrame.new(shadowX, 0.06, -1), Color3.fromRGB(4, 4, 7), Enum.Material.SmoothPlastic, 0.45, false)
+	local shadow = part(model, "FloorShadow", Vector3.new(2.2, 0.03, 1.3), CFrame.new(shadowX, 0.06, 0), Color3.fromRGB(4, 4, 7), Enum.Material.SmoothPlastic, 0.45, false)
 	shadow.CanCollide = false
 	shadow.CastShadow = false
 
-	local npcPosition = WorldBuilder.physicalNpc.Position
 	model:PivotTo(WorldBuilder.physicalNpc)
 	model.Parent = folder
 
@@ -644,7 +689,7 @@ function WorldBuilder.spawnPhysicalPassenger(data)
 	if not data.noReflection then
 		local source = Instance.new("Model")
 		source.Name = REFLECTION_NAME
-		for _, partName in ipairs({ "Torso", "Head", "Hat", "LeftArm", "RightArm", "LeftLeg", "RightLeg", "LeftShoe", "RightShoe" }) do
+		for _, partName in ipairs({ "Torso", "Head", "Hat", "HatBrim", "Left Arm", "Right Arm", "Left Leg", "Right Leg" }) do
 			local original = model:FindFirstChild(partName)
 			if original then
 				local clone = original:Clone()
