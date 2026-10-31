@@ -342,7 +342,7 @@ local PHYSICAL_WORLD = "NightConductorPhysicalWorld"
 local PHYSICAL_PASSENGERS = "NightConductorPhysicalPassengers"
 local REFLECTION_NAME = "NightConductorReflection"
 
-WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 6.6), Vector3.new(0.6, 3.2, 0.9))
+WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 11.5), Vector3.new(0.6, 3.2, 0.9))
 WorldBuilder.physicalNpc = CFrame.lookAt(Vector3.new(1.1, 3, 0.9), Vector3.new(0, 3, 6.6))
 
 local function surfaceLabel(partInstance, text, face, textSize)
@@ -381,9 +381,9 @@ function WorldBuilder.buildVestibule()
 	end
 
 	buildLighting()
-	Lighting.Brightness = 2.4
-	Lighting.Ambient = Color3.fromRGB(115, 105, 92)
-	Lighting.OutdoorAmbient = Color3.fromRGB(95, 90, 96)
+	Lighting.Brightness = 1.8
+	Lighting.Ambient = Color3.fromRGB(85, 78, 70)
+	Lighting.OutdoorAmbient = Color3.fromRGB(80, 75, 80)
 	Lighting.EnvironmentDiffuseScale = 0.6
 
 	local world = Instance.new("Folder")
@@ -391,8 +391,8 @@ function WorldBuilder.buildVestibule()
 	world.Parent = Workspace
 
 	-- Platform
-	part(world, "Platform", Vector3.new(16, 0.4, 11), CFrame.new(0, -0.2, 1.5), Color3.fromRGB(64, 58, 52), Enum.Material.Concrete)
-	part(world, "PlatformLine", Vector3.new(16, 0.05, 0.3), CFrame.new(0, 0.02, 6.4), Color3.fromRGB(210, 170, 60), Enum.Material.Neon).CanCollide = false
+	part(world, "Platform", Vector3.new(16, 0.4, 18), CFrame.new(0, -0.2, 5), Color3.fromRGB(64, 58, 52), Enum.Material.Concrete)
+	part(world, "PlatformLine", Vector3.new(16, 0.05, 0.3), CFrame.new(0, 0.02, 13.4), Color3.fromRGB(210, 170, 60), Enum.Material.Neon).CanCollide = false
 	part(world, "EntranceRunner", Vector3.new(3.2, 0.05, 4.6), CFrame.new(0, 0.03, -0.6), Color3.fromRGB(92, 30, 36), Enum.Material.Fabric).CanCollide = false
 
 	-- Invisible barriers: the platform is open, but the player cannot fall off.
@@ -400,7 +400,7 @@ function WorldBuilder.buildVestibule()
 	barrierLeft.CanCollide = true
 	local barrierRight = part(world, "BarrierRight", Vector3.new(0.2, 8, 11), CFrame.new(8.1, 4, 1.5), Color3.fromRGB(0, 0, 0), Enum.Material.SmoothPlastic, 1)
 	barrierRight.CanCollide = true
-	local barrierFront = part(world, "BarrierFront", Vector3.new(16, 8, 0.2), CFrame.new(0, 4, 7.1), Color3.fromRGB(0, 0, 0), Enum.Material.SmoothPlastic, 1)
+	local barrierFront = part(world, "BarrierFront", Vector3.new(16, 8, 0.2), CFrame.new(0, 4, 14.1), Color3.fromRGB(0, 0, 0), Enum.Material.SmoothPlastic, 1)
 	barrierFront.CanCollide = true
 
 	-- Train exterior with an open door
@@ -482,21 +482,21 @@ function WorldBuilder.buildVestibule()
 	clockFace.Shape = Enum.PartType.Cylinder
 
 	-- Station canopy and lamps
-	part(world, "Canopy", Vector3.new(14, 0.3, 8.6), CFrame.new(0, 6.8, 2.4), Color3.fromRGB(18, 22, 22), Enum.Material.Metal)
+	part(world, "Canopy", Vector3.new(14, 0.3, 16), CFrame.new(0, 6.8, 5.5), Color3.fromRGB(18, 22, 22), Enum.Material.Metal)
 	for _, x in ipairs({ -6.6, 6.6 }) do
-		part(world, "Pillar", Vector3.new(0.4, 7, 0.4), CFrame.new(x, 3.5, 4.8), Color3.fromRGB(40, 40, 40), Enum.Material.Metal)
-		local platformLamp = part(world, "PlatformLamp", Vector3.new(0.5, 0.2, 0.5), CFrame.new(x, 6.45, 4.8), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
+		part(world, "Pillar", Vector3.new(0.4, 7, 0.4), CFrame.new(x, 3.5, 10), Color3.fromRGB(40, 40, 40), Enum.Material.Metal)
+		local platformLamp = part(world, "PlatformLamp", Vector3.new(0.5, 0.2, 0.5), CFrame.new(x, 6.45, 10), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
 		platformLamp.CanCollide = false
-		addPointLight(platformLamp, Color3.fromRGB(255, 220, 160), 2.4, 26)
+		addPointLight(platformLamp, Color3.fromRGB(255, 220, 160), 1.6, 26)
 	end
 
-	local canopyLamp = part(world, "CanopyLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 1.8), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
+	local canopyLamp = part(world, "CanopyLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 6.5), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
 	canopyLamp.CanCollide = false
-	addPointLight(canopyLamp, Color3.fromRGB(255, 220, 160), 3.0, 28)
+	addPointLight(canopyLamp, Color3.fromRGB(255, 220, 160), 1.8, 28)
 
-	local frontLamp = part(world, "FrontLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 4.0), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
+	local frontLamp = part(world, "FrontLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 10.5), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
 	frontLamp.CanCollide = false
-	addPointLight(frontLamp, Color3.fromRGB(255, 220, 160), 0.9, 28)
+	addPointLight(frontLamp, Color3.fromRGB(255, 220, 160), 0.5, 28)
 
 	-- Platform props
 	part(world, "BenchSeat", Vector3.new(3, 0.3, 1), CFrame.new(4.6, 1.1, 4.8), Color3.fromRGB(80, 55, 35), Enum.Material.Wood)
@@ -548,6 +548,25 @@ function WorldBuilder.buildVestibule()
 	part(stampAdmit, "Top", Vector3.new(0.3, 0.1, 0.3), stampAdmit.CFrame * CFrame.new(0, 0.2, 0), Color3.fromRGB(40, 110, 65), Enum.Material.Metal).CanCollide = false
 	local stampDeny = prop("StampDeny", Vector3.new(0.24, 0.42, 0.24), Vector3.new(-0.24, 0.21, 0.42), Color3.fromRGB(120, 45, 50), Enum.Material.Metal)
 	part(stampDeny, "Top", Vector3.new(0.3, 0.1, 0.3), stampDeny.CFrame * CFrame.new(0, 0.2, 0), Color3.fromRGB(120, 45, 50), Enum.Material.Metal).CanCollide = false
+
+	-- The user's real train model replaces the primitive train wall.
+	local removeNames = {
+		"TrainWallLeft", "TrainWallRight", "TrainWallTop", "TrainRoof",
+		"TrimLeft", "TrimRight", "SkirtLeft", "SkirtRight",
+		"DoorPostLeft", "DoorPostRight", "DoorTop", "DoorStep",
+		"TrainFloor", "TrainBack", "TrainSideLeft", "TrainSideRight", "TrainCeiling",
+		"SeatLeft", "SeatRight", "InteriorLamp", "DoorwayLamp", "VestibuleLamp", "InteriorGlow",
+		"WindowFrameTop", "WindowFrameBottom", "WindowFrameLeft", "WindowFrameRight", "Window", "WindowGlow",
+		"TrainSignLeft", "TrainSignRight", "RulesPoster", "Clock",
+	}
+	for _, child in ipairs(world:GetChildren()) do
+		for _, name in ipairs(removeNames) do
+			if child.Name == name then
+				child:Destroy()
+				break
+			end
+		end
+	end
 
 	-- Reflection holder lives in ReplicatedStorage, not rendered in the room.
 
