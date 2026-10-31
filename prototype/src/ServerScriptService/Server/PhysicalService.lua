@@ -164,7 +164,14 @@ local function runShift(player)
 			correct = correct,
 		})
 
-		task.wait(1.6)
+		if currentModel then
+			if decision == "admit" then
+				WorldBuilder.movePassenger(currentModel, CFrame.lookAt(Vector3.new(0, 3, -4.8), Vector3.new(0, 3, -8)), 1.4)
+			else
+				WorldBuilder.movePassenger(currentModel, CFrame.lookAt(Vector3.new(6, 3, 3.5), Vector3.new(9, 3, 3.5)), 1.4)
+			end
+		end
+		task.wait(0.2)
 		WorldBuilder.clearPhysical()
 		currentData = nil
 		currentModel = nil

@@ -342,8 +342,8 @@ local PHYSICAL_WORLD = "NightConductorPhysicalWorld"
 local PHYSICAL_PASSENGERS = "NightConductorPhysicalPassengers"
 local REFLECTION_NAME = "NightConductorReflection"
 
-WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 4.2), Vector3.new(0, 4.0, -1))
-WorldBuilder.physicalNpc = CFrame.lookAt(Vector3.new(0, 0, -1), Vector3.new(0, 0, 3))
+WorldBuilder.physicalSpawn = CFrame.lookAt(Vector3.new(0, 3, 5.0), Vector3.new(0.6, 3.2, 0.4))
+WorldBuilder.physicalNpc = CFrame.lookAt(Vector3.new(1.1, 3, 0.4), Vector3.new(0, 3, 5.0))
 
 local function surfaceLabel(partInstance, text, face, textSize)
 	local gui = Instance.new("SurfaceGui")
@@ -381,56 +381,135 @@ function WorldBuilder.buildVestibule()
 	end
 
 	buildLighting()
-	Lighting.Brightness = 2.4
-	Lighting.Ambient = Color3.fromRGB(95, 85, 74)
-	Lighting.OutdoorAmbient = Color3.fromRGB(78, 73, 80)
+	Lighting.Brightness = 1.6
+	Lighting.Ambient = Color3.fromRGB(75, 69, 62)
+	Lighting.OutdoorAmbient = Color3.fromRGB(80, 75, 82)
 	Lighting.EnvironmentDiffuseScale = 0.6
 
 	local world = Instance.new("Folder")
 	world.Name = PHYSICAL_WORLD
 	world.Parent = Workspace
 
-	part(world, "Floor", Vector3.new(10, 0.4, 10), CFrame.new(0, -0.2, 0), Color3.fromRGB(42, 30, 22), Enum.Material.SmoothPlastic)
-	part(world, "Ceiling", Vector3.new(10, 0.4, 10), CFrame.new(0, 6, 0), Color3.fromRGB(26, 30, 28), Enum.Material.Wood)
-	part(world, "WallBack", Vector3.new(10, 6.2, 0.4), CFrame.new(0, 3, -5), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
-	part(world, "WallFront", Vector3.new(10, 6.2, 0.4), CFrame.new(0, 3, 5), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
-	part(world, "WallLeft", Vector3.new(0.4, 6.2, 10), CFrame.new(-5, 3, 0), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
-	part(world, "WallRight", Vector3.new(0.4, 6.2, 10), CFrame.new(5, 3, 0), Color3.fromRGB(32, 55, 44), Enum.Material.Wood)
+	-- Platform
+	part(world, "Platform", Vector3.new(16, 0.4, 11), CFrame.new(0, -0.2, 1.5), Color3.fromRGB(64, 58, 52), Enum.Material.Concrete)
+	part(world, "PlatformLine", Vector3.new(16, 0.05, 0.3), CFrame.new(0, 0.02, 6.4), Color3.fromRGB(210, 170, 60), Enum.Material.Neon).CanCollide = false
+	part(world, "EntranceRunner", Vector3.new(3.2, 0.05, 4.6), CFrame.new(0, 0.03, -0.6), Color3.fromRGB(92, 30, 36), Enum.Material.Fabric).CanCollide = false
 
-	part(world, "Rug", Vector3.new(5.4, 0.04, 3.4), CFrame.new(0, 0.02, 0.6), Color3.fromRGB(80, 28, 34), Enum.Material.Fabric).CanCollide = false
+	-- Invisible barriers: the platform is open, but the player cannot fall off.
+	local barrierLeft = part(world, "BarrierLeft", Vector3.new(0.2, 8, 11), CFrame.new(-8.1, 4, 1.5), Color3.fromRGB(0, 0, 0), Enum.Material.SmoothPlastic, 1)
+	barrierLeft.CanCollide = true
+	local barrierRight = part(world, "BarrierRight", Vector3.new(0.2, 8, 11), CFrame.new(8.1, 4, 1.5), Color3.fromRGB(0, 0, 0), Enum.Material.SmoothPlastic, 1)
+	barrierRight.CanCollide = true
+	local barrierFront = part(world, "BarrierFront", Vector3.new(16, 8, 0.2), CFrame.new(0, 4, 7.1), Color3.fromRGB(0, 0, 0), Enum.Material.SmoothPlastic, 1)
+	barrierFront.CanCollide = true
 
-	local door = part(world, "Door", Vector3.new(2.1, 3.2, 0.16), CFrame.new(0, 1.6, -4.78), Color3.fromRGB(44, 30, 22), Enum.Material.Wood)
-	part(world, "DoorFrameTop", Vector3.new(2.4, 0.2, 0.3), CFrame.new(0, 3.3, -4.74), Color3.fromRGB(120, 92, 52), Enum.Material.Metal)
-	part(world, "DoorHandle", Vector3.new(0.12, 0.12, 0.5), CFrame.new(0.7, 1.5, -4.6), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
-	door.CanCollide = false
+	-- Train exterior with an open door
+	part(world, "TrainWallLeft", Vector3.new(4.8, 6.4, 0.4), CFrame.new(-4.6, 3.2, -2.4), Color3.fromRGB(26, 50, 40), Enum.Material.Metal)
+	part(world, "TrainWallRight", Vector3.new(4.8, 6.4, 0.4), CFrame.new(4.6, 3.2, -2.4), Color3.fromRGB(26, 50, 40), Enum.Material.Metal)
+	part(world, "TrainWallTop", Vector3.new(4.4, 0.6, 0.4), CFrame.new(0, 6.1, -2.4), Color3.fromRGB(26, 50, 40), Enum.Material.Metal)
+	part(world, "TrainRoof", Vector3.new(14, 0.3, 5.2), CFrame.new(0, 6.4, -3.4), Color3.fromRGB(18, 24, 24), Enum.Material.Metal)
 
-	local rugLight = part(world, "RugLight", Vector3.new(0.2, 0.2, 0.2), CFrame.new(0, 5.7, 0), Color3.fromRGB(255, 220, 160), Enum.Material.Neon)
-	rugLight.CanCollide = false
-	addPointLight(rugLight, Color3.fromRGB(255, 214, 150), 1.8, 24)
+	-- Gold trim along the train body
+	part(world, "TrimLeft", Vector3.new(4.8, 0.12, 0.06), CFrame.new(-4.6, 1.3, -2.17), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+	part(world, "TrimRight", Vector3.new(4.8, 0.12, 0.06), CFrame.new(4.6, 1.3, -2.17), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+	part(world, "SkirtLeft", Vector3.new(4.8, 0.8, 0.06), CFrame.new(-4.6, 0.5, -2.17), Color3.fromRGB(16, 30, 24), Enum.Material.Metal)
+	part(world, "SkirtRight", Vector3.new(4.8, 0.8, 0.06), CFrame.new(4.6, 0.5, -2.17), Color3.fromRGB(16, 30, 24), Enum.Material.Metal)
 
-	local lampAnchor = part(world, "CeilingLamp", Vector3.new(0.6, 0.1, 0.6), CFrame.new(-2.2, 5.86, -1), Color3.fromRGB(255, 230, 180), Enum.Material.Neon)
-	lampAnchor.CanCollide = false
-	addPointLight(lampAnchor, Color3.fromRGB(255, 220, 160), 2.4, 28)
+	part(world, "DoorPostLeft", Vector3.new(0.18, 5.8, 0.55), CFrame.new(-2.25, 2.9, -2.35), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+	part(world, "DoorPostRight", Vector3.new(0.18, 5.8, 0.55), CFrame.new(2.25, 2.9, -2.35), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+	part(world, "DoorTop", Vector3.new(4.7, 0.18, 0.55), CFrame.new(0, 5.8, -2.35), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+	part(world, "DoorStep", Vector3.new(4.7, 0.2, 0.6), CFrame.new(0, 0.3, -2.35), Color3.fromRGB(90, 80, 60), Enum.Material.Metal)
 
-	local sconce = part(world, "Sconce", Vector3.new(0.18, 0.5, 0.36), CFrame.new(-4.78, 4.1, 2.6), Color3.fromRGB(255, 215, 150), Enum.Material.Neon)
-	sconce.CanCollide = false
-	sconce.Transparency = 1
-	addPointLight(sconce, Color3.fromRGB(255, 210, 150), 1.2, 14)
+	-- Train interior, visible through the open door
+	part(world, "TrainFloor", Vector3.new(5, 0.2, 4.6), CFrame.new(0, 0.1, -4.6), Color3.fromRGB(70, 46, 30), Enum.Material.WoodPlanks)
+	part(world, "TrainBack", Vector3.new(5.4, 6.4, 0.3), CFrame.new(0, 3.2, -6.8), Color3.fromRGB(24, 34, 30), Enum.Material.Wood)
+	part(world, "TrainSideLeft", Vector3.new(0.3, 6.4, 4.6), CFrame.new(-2.6, 3.2, -4.6), Color3.fromRGB(24, 34, 30), Enum.Material.Wood)
+	part(world, "TrainSideRight", Vector3.new(0.3, 6.4, 4.6), CFrame.new(2.6, 3.2, -4.6), Color3.fromRGB(24, 34, 30), Enum.Material.Wood)
+	part(world, "TrainCeiling", Vector3.new(5.2, 0.2, 4.6), CFrame.new(0, 6.2, -4.6), Color3.fromRGB(18, 24, 22), Enum.Material.Wood)
+	part(world, "SeatLeft", Vector3.new(0.8, 1.4, 1.2), CFrame.new(-1.7, 0.85, -4.8), Color3.fromRGB(80, 35, 40), Enum.Material.Fabric)
+	part(world, "SeatRight", Vector3.new(0.8, 1.4, 1.2), CFrame.new(1.7, 0.85, -4.8), Color3.fromRGB(80, 35, 40), Enum.Material.Fabric)
 
-	local poster = part(world, "RulesPoster", Vector3.new(0.06, 1.7, 2.1), CFrame.new(-4.76, 2.9, 1.6), Color3.fromRGB(175, 155, 120), Enum.Material.SmoothPlastic)
-	surfaceLabel(poster, "ПРАВИЛА СМЕНЫ\n\nДАТА · ИМЯ · ФОТО\nТЕНЬ · ОТРАЖЕНИЕ · РУКИ\n\nВсё совпало — ПРОПУСТИТЬ.\nЧто-то не так — ОТКАТАТЬ.", Enum.NormalId.Right)
+	local interiorLamp = part(world, "InteriorLamp", Vector3.new(0.5, 0.1, 0.5), CFrame.new(0, 5.6, -4.6), Color3.fromRGB(255, 225, 170), Enum.Material.Neon)
+	interiorLamp.CanCollide = false
+	addPointLight(interiorLamp, Color3.fromRGB(255, 220, 160), 2.6, 20)
+
+	local doorwayLamp = part(world, "DoorwayLamp", Vector3.new(0.35, 0.1, 0.35), CFrame.new(0, 4.2, -3.0), Color3.fromRGB(255, 225, 170), Enum.Material.Neon)
+	doorwayLamp.CanCollide = false
+	addPointLight(doorwayLamp, Color3.fromRGB(255, 220, 160), 2.0, 14)
+
+	local vestibuleLamp = part(world, "VestibuleLamp", Vector3.new(0.4, 0.1, 0.4), CFrame.new(0, 3.4, -4.0), Color3.fromRGB(255, 225, 170), Enum.Material.Neon)
+	vestibuleLamp.CanCollide = false
+	addPointLight(vestibuleLamp, Color3.fromRGB(255, 220, 160), 2.2, 12)
+
+	local interiorGlow = part(world, "InteriorGlow", Vector3.new(4.4, 3.2, 0.06), CFrame.new(0, 3.0, -6.64), Color3.fromRGB(255, 215, 150), Enum.Material.Neon)
+	interiorGlow.CanCollide = false
+	interiorGlow.Transparency = 0.55
+
+	for _, x in ipairs({ -5.2, 5.2 }) do
+		local frameTop = part(world, "WindowFrameTop", Vector3.new(2.4, 0.12, 0.08), CFrame.new(x, 4.95, -2.18), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+		frameTop.CanCollide = false
+		local frameBottom = part(world, "WindowFrameBottom", Vector3.new(2.4, 0.12, 0.08), CFrame.new(x, 3.45, -2.18), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+		frameBottom.CanCollide = false
+		local frameLeft = part(world, "WindowFrameLeft", Vector3.new(0.12, 1.5, 0.08), CFrame.new(x - 1.15, 4.2, -2.18), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+		frameLeft.CanCollide = false
+		local frameRight = part(world, "WindowFrameRight", Vector3.new(0.12, 1.5, 0.08), CFrame.new(x + 1.15, 4.2, -2.18), Color3.fromRGB(170, 135, 70), Enum.Material.Metal)
+		frameRight.CanCollide = false
+		local window = part(world, "Window", Vector3.new(2.2, 1.4, 0.04), CFrame.new(x, 4.2, -2.16), Color3.fromRGB(255, 212, 145), Enum.Material.Neon)
+		window.CanCollide = false
+		window.Transparency = 0.6
+	end
+
+	-- Signs beside the door, at eye level
+	local leftSign = part(world, "TrainSignLeft", Vector3.new(2.6, 0.5, 0.08), CFrame.new(-3.9, 4.9, -2.16), Color3.fromRGB(12, 18, 16), Enum.Material.Metal)
+	local leftSignLabel = surfaceLabel(leftSign, "NIGHT CONDUCTOR", Enum.NormalId.Back)
+	leftSignLabel.TextColor3 = Color3.fromRGB(255, 220, 150)
+	leftSignLabel.Font = Enum.Font.GothamBold
+	local rightSign = part(world, "TrainSignRight", Vector3.new(2.6, 0.5, 0.08), CFrame.new(3.9, 4.9, -2.16), Color3.fromRGB(12, 18, 16), Enum.Material.Metal)
+	local rightSignLabel = surfaceLabel(rightSign, "STATION 0", Enum.NormalId.Back)
+	rightSignLabel.TextColor3 = Color3.fromRGB(255, 220, 150)
+	rightSignLabel.Font = Enum.Font.GothamBold
+
+	local poster = part(world, "RulesPoster", Vector3.new(2.2, 1.8, 0.06), CFrame.new(-3.9, 3.4, -2.17), Color3.fromRGB(175, 155, 120), Enum.Material.SmoothPlastic)
+	surfaceLabel(poster, "ПРАВИЛА СМЕНЫ\n\nДАТА · ИМЯ · ФОТО\nТЕНЬ · ОТРАЖЕНИЕ · РУКИ\n\nВсё совпало — ПРОПУСТИТЬ.\nЧто-то не так — ОТКАТАТЬ.", Enum.NormalId.Back)
 	local posterSurface = poster:FindFirstChildOfClass("SurfaceGui")
 	if posterSurface then
 		posterSurface.LightInfluence = 0.35
 	end
 
-	local clockFace = part(world, "Clock", Vector3.new(0.08, 1.1, 1.1), CFrame.new(0, 4.2, -4.76) * CFrame.Angles(0, math.rad(90), 0), Color3.fromRGB(235, 225, 200), Enum.Material.SmoothPlastic)
+	local clockFace = part(world, "Clock", Vector3.new(0.08, 1.1, 1.1), CFrame.new(3.9, 3.6, -2.14) * CFrame.Angles(0, math.rad(90), 0), Color3.fromRGB(235, 225, 200), Enum.Material.SmoothPlastic)
 	clockFace.Shape = Enum.PartType.Cylinder
 
-	local desk = part(world, "Table", Vector3.new(2.6, 0.12, 1.2), CFrame.new(-2.6, 2.7, 2.2), Color3.fromRGB(62, 42, 28), Enum.Material.SmoothPlastic)
+	-- Station canopy and lamps
+	part(world, "Canopy", Vector3.new(14, 0.3, 8.6), CFrame.new(0, 6.8, 2.4), Color3.fromRGB(18, 22, 22), Enum.Material.Metal)
+	for _, x in ipairs({ -6.6, 6.6 }) do
+		part(world, "Pillar", Vector3.new(0.4, 7, 0.4), CFrame.new(x, 3.5, 4.8), Color3.fromRGB(40, 40, 40), Enum.Material.Metal)
+		local platformLamp = part(world, "PlatformLamp", Vector3.new(0.5, 0.2, 0.5), CFrame.new(x, 6.45, 4.8), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
+		platformLamp.CanCollide = false
+		addPointLight(platformLamp, Color3.fromRGB(255, 220, 160), 2.4, 26)
+	end
+
+	local canopyLamp = part(world, "CanopyLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 1.8), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
+	canopyLamp.CanCollide = false
+	addPointLight(canopyLamp, Color3.fromRGB(255, 220, 160), 2.4, 28)
+
+	local frontLamp = part(world, "FrontLamp", Vector3.new(0.6, 0.15, 0.6), CFrame.new(0, 6.5, 4.0), Color3.fromRGB(255, 225, 175), Enum.Material.Neon)
+	frontLamp.CanCollide = false
+	addPointLight(frontLamp, Color3.fromRGB(255, 220, 160), 0.7, 28)
+
+	-- Platform props
+	part(world, "BenchSeat", Vector3.new(3, 0.3, 1), CFrame.new(4.6, 1.1, 4.8), Color3.fromRGB(80, 55, 35), Enum.Material.Wood)
+	part(world, "BenchBack", Vector3.new(3, 1.2, 0.2), CFrame.new(4.6, 1.8, 5.25), Color3.fromRGB(80, 55, 35), Enum.Material.Wood)
+	part(world, "BenchLegLeft", Vector3.new(0.2, 1.1, 0.8), CFrame.new(3.4, 0.55, 4.8), Color3.fromRGB(50, 35, 25), Enum.Material.Metal)
+	part(world, "BenchLegRight", Vector3.new(0.2, 1.1, 0.8), CFrame.new(5.8, 0.55, 4.8), Color3.fromRGB(50, 35, 25), Enum.Material.Metal)
+
+	local tableLamp = part(world, "TableLamp", Vector3.new(0.35, 0.2, 0.35), CFrame.new(-3.2, 4.7, 2.0), Color3.fromRGB(255, 220, 165), Enum.Material.Neon)
+	tableLamp.CanCollide = false
+	addPointLight(tableLamp, Color3.fromRGB(255, 215, 155), 0.9, 18)
+
+	local desk = part(world, "Table", Vector3.new(2.6, 0.12, 1.2), CFrame.new(-3.2, 2.7, 2.0), Color3.fromRGB(62, 42, 28), Enum.Material.SmoothPlastic)
 	desk.CanCollide = true
 	for _, offset in ipairs({ Vector3.new(-1.15, 0, -0.48), Vector3.new(1.15, 0, -0.48), Vector3.new(-1.15, 0, 0.48), Vector3.new(1.15, 0, 0.48) }) do
-		part(world, "TableLeg", Vector3.new(0.12, 2.7, 0.12), CFrame.new(-2.6, 1.35, 2.2) * CFrame.new(offset), Color3.fromRGB(52, 34, 22), Enum.Material.Wood)
+		part(world, "TableLeg", Vector3.new(0.12, 2.7, 0.12), CFrame.new(-3.2, 1.35, 2.0) * CFrame.new(offset), Color3.fromRGB(52, 34, 22), Enum.Material.Wood)
 	end
 
 	local props = Instance.new("Folder")
@@ -438,7 +517,7 @@ function WorldBuilder.buildVestibule()
 	props.Parent = world
 
 	local function prop(name, size, relative, color, material)
-		local p = part(props, name, size, CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(relative), color, material or Enum.Material.SmoothPlastic)
+		local p = part(props, name, size, CFrame.new(-3.2, 2.82, 2.0) * CFrame.new(relative), color, material or Enum.Material.SmoothPlastic)
 		p.CanCollide = false
 		return p
 	end
@@ -456,12 +535,12 @@ function WorldBuilder.buildVestibule()
 	part(lamp, "Glass", Vector3.new(0.26, 0.3, 0.26), lamp.CFrame * CFrame.new(0, 0.03, 0), Color3.fromRGB(255, 235, 170), Enum.Material.Neon).CanCollide = false
 
 	local mirror = prop("Mirror", Vector3.new(0.5, 0.7, 0.06), Vector3.new(0.85, 0.36, 0.3), Color3.fromRGB(150, 150, 160), Enum.Material.Metal)
-	mirror.CFrame = CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(0.85, 0.36, 0.3) * CFrame.Angles(0, math.rad(15), 0)
+	mirror.CFrame = CFrame.new(-3.2, 2.82, 2.0) * CFrame.new(0.85, 0.36, 0.3) * CFrame.Angles(0, math.rad(15), 0)
 	part(mirror, "Glass", Vector3.new(0.4, 0.6, 0.02), mirror.CFrame * CFrame.new(0, 0, 0.04), Color3.fromRGB(190, 210, 215), Enum.Material.Glass).CanCollide = false
 
 	local magnifier = prop("Magnifier", Vector3.new(0.34, 0.34, 0.05), Vector3.new(-0.15, 0.04, 0.42), Color3.fromRGB(150, 120, 60), Enum.Material.Metal)
 	magnifier.Shape = Enum.PartType.Cylinder
-	magnifier.CFrame = CFrame.new(-2.6, 2.82, 2.2) * CFrame.new(-0.15, 0.04, 0.42) * CFrame.Angles(0, 0, math.rad(90))
+	magnifier.CFrame = CFrame.new(-3.2, 2.82, 2.0) * CFrame.new(-0.15, 0.04, 0.42) * CFrame.Angles(0, 0, math.rad(90))
 
 	local stampAdmit = prop("StampAdmit", Vector3.new(0.24, 0.42, 0.24), Vector3.new(-0.55, 0.21, 0.42), Color3.fromRGB(40, 110, 65), Enum.Material.Metal)
 	part(stampAdmit, "Top", Vector3.new(0.3, 0.1, 0.3), stampAdmit.CFrame * CFrame.new(0, 0.2, 0), Color3.fromRGB(40, 110, 65), Enum.Material.Metal).CanCollide = false
@@ -575,7 +654,7 @@ function WorldBuilder.spawnPhysicalPassenger(data)
 			end
 		end
 		source.PrimaryPart = source:FindFirstChild("Torso")
-		source:PivotTo(CFrame.new(0, 0, 0))
+		source:PivotTo(CFrame.new(0, 3, 0))
 		source.Parent = ReplicatedStorage
 	end
 
